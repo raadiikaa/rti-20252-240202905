@@ -57,21 +57,22 @@ Nama Peneliti    : Radika Rismawati Tri Prasaja
 Tanggal          : Minggu, 12 April 2026
 
 1. Ketika membaca klaim "metode X 95% akurat":
-   - Pertanyaan pertama saya: 95% akurat diukur pada dataset seperti apa? Siapa yang mengumpulkan datanya, dan apakah kondisi pengujiannya mewakili kondisi nyata?
-   - Data yang dibutuhkan untuk verifikasi: Ukuran dan komposisi dataset uji, metode validasi (cross-validation / hold-out / independent test set), baseline pembanding, dan apakah ada konflik kepentingan dari peneliti.
+   - Pertanyaan pertama saya: 95% akurat diukur pada dataset seperti apa? Apakah dataset tersebut seimbang antar kelas sentimennya?
+   - Data yang dibutuhkan untuk verifikasi: Ukuran dan komposisi dataset uji, distribusi kelas (positif/negatif/netral), metode validasi yang digunakan, dan apakah metrik lain seperti F1-Score juga dilaporkan.
+
 
 2. Posisi paradigma:
    - Pendekatan: [ ] Positivis  [ ] Interpretivis  [✅] Design Science  [ ] Mixed
-   - Alasan: Riset TI seringkali menghasilkan sistem/artefak. Design Science memungkinkan kita membangun sekaligus menguji hipotesis — apakah artefak yang dibuat memang menjawab masalah yang diklaim.
+   - Alasan: Penelitian ini membangun pipeline klasifikasi sentimen sebagai artefak yang digunakan untuk menguji hipotesis — apakah SVM lebih unggul dari Naive Bayes pada teks ulasan mobile banking berbahasa Indonesia.
 
 3. Identifikasi distorsi:
-   - Asumsi tersembunyi: Dataset yang digunakan bersih, representatif, dan bebas dari bias seleksi
-   - Sumber bias potensial: Peneliti memilih metrik evaluasi yang paling menguntungkan metodenya; dataset terlalu homogen sehingga tidak bisa digeneralisasi
-   - Langkah mitigasi: Gunakan dataset independen dari pihak ketiga, laporkan semua metrik (bukan hanya yang bagus), dan lakukan peer review sebelum publikasi
+   - Asumsi tersembunyi: Rating bintang pengguna secara akurat merepresentasikan sentimen teks ulasan yang ditulis
+   - Sumber bias potensial: Ulasan dengan rating tinggi belum tentu berteks positif; peneliti mungkin memilih metrik yang menguntungkan algoritmanya
+   - Langkah mitigasi: Lakukan validasi subsampel manual, laporkan semua metrik (F1, Precision, Recall), dan gunakan dataset yang sama untuk kedua algoritma
 
 4. Komitmen etika:
-   - Data yang tidak akan dimanipulasi: Data hasil eksperimen mentah — tidak akan dihapus outlier tanpa justifikasi metodologis yang jelas dan transparan
-   - Batasan yang diakui sejak awal: Penelitian ini hanya berlaku pada konteks/domain tertentu; generalisasi ke luar konteks membutuhkan replikasi tambahan
+   - Data yang tidak akan dimanipulasi: Hasil klasifikasi mentah dari kedua algoritma — tidak akan dipilih selektif hanya yang menguntungkan SVM
+   - Batasan yang diakui sejak awal: Hasil hanya berlaku untuk ulasan mobile banking Indonesia di Google Play; generalisasi ke platform atau domain lain membutuhkan replikasi tambahan
 ```
 
 ---
@@ -81,22 +82,22 @@ Tanggal          : Minggu, 12 April 2026
 Pilih satu paper riset di bidang TI yang mengklaim "metode X meningkatkan performa." Telusuri setiap tahap Research Trust Model.
 
 **Paper yang dipilih:**
-> Judul:  Optimasi Algoritma Random Forest menggunakan Principal Component Analysis untuk Deteksi Malware
-> Penulis (Tahun): Fauzi Adi Rafrastara, Ricardus Anggi Pramunendar, Dwi Puji Prabowo, Etika Kartikadarma, Usman Sudibyoe (2023)
+> Judul: Sentiment Analysis of Mobile Banking Reviews Using Machine Learning Models
+> Penulis (Tahun): Santoso et al. (2025)
 
 | Tahap | Apa yang Dilakukan | Potensi Distorsi |
 |-------|-------------------|-----------------|
-| Reality → Data | Mengunduh dataset malware dari UCI Machine Learning Repository (VxHeaven & VirusTotal), terdiri dari 595 file goodware dan 5.653 file malware |  Dataset dibuat tahun 2019, sementara penelitian dilakukan 2023 — malware sudah banyak berkembang, sehingga dataset tidak merepresentasikan ancaman malware terkini |
-| Data → Processing | Menghapus 2 fitur bernilai 0 di seluruh data, menghapus fitur 'filename', lalu menyeimbangkan data menggunakan Random Under Sampling dari 5.653 menjadi 595 data malware | Random Under Sampling membuang 5.058 data malware — banyak pola malware yang hilang dan tidak ikut dianalisis |
-| Processing → Analysis | Membandingkan 5 algoritma (Random Forest, Adaboost, Neural Network, SVM, kNN) menggunakan 5-Fold Cross Validation, kemudian menerapkan PCA |Hanya menggunakan 2 metrik (akurasi & recall) — metrik lain seperti precision, F1-score, dan AUC tidak dilaporkan sama sekali |
-| Analysis → Inference | Menyimpulkan Random Forest terbaik dengan akurasi 98.3%, dan dengan PCA meningkat menjadi 98.7% | Peningkatan hanya 0.4% (dari 98.3% ke 98.7%) namun diklaim signifikan — ini bisa jadi dalam batas noise statistik biasa, bukan peningkatan nyata |
-| Inference → Knowledge | Mengklaim "PCA berhasil meningkatkan performa Random Forest untuk deteksi malware" | Klaim terlalu luas: eksperimen hanya dilakukan di satu dataset statis dari satu sumber, belum diuji di lingkungan nyata atau dataset malware lain yang lebih baru |
+| Reality → Data | Mengumpulkan 6.000 ulasan aplikasi BRI dan BSI dari Google Play Store periode Januari–Juli 2024 | Hanya mencakup 2 aplikasi dari periode 6 bulan — tidak merepresentasikan keseluruhan pengguna mobile banking Indonesia yang lebih beragam |
+| Data → Processing | Rating bintang digunakan sebagai proxy label sentimen tanpa validasi manual — ulasan bintang 1 bisa berisi pujian dan sebaliknya |
+| Processing → Analysis | Membandingkan KNN, SVM, Random Forest, dan Naive Bayes menggunakan metrik akurasi, precision, recall, F1-score | Tidak dilaporkan apakah data seimbang antar kelas — jika kelas positif dominan, akurasi tinggi bisa menyesatkan |
+| Analysis → Inference | Menyimpulkan Random Forest dan Naive Bayes memiliki kinerja terbaik dengan akurasi tertinggi 81% (BRI) dan 78% (BSI) | Kesimpulan "terbaik" hanya berdasarkan akurasi — F1-Score per kelas tidak dijadikan primary metric padahal data kemungkinan tidak seimbang |
+| Inference → Knowledge | Mengklaim Naive Bayes dan Random Forest cocok untuk analisis sentimen ulasan mobile banking Indonesia | Klaim terlalu luas: hasil hanya dari 2 bank dalam 6 bulan, belum diuji pada bank lain atau periode berbeda |
 
-**Distorsi paling besar di tahap:** Data → Processing
+**Distorsi paling besar di tahap:** Processing → Analysis
 
 **Dua distorsi spesifik yang teridentifikasi:**
-1. Random Under Sampling yang agresif — Dari 5.653 data malware, hanya 595 yang dipertahankan (membuang 89% data malware). Ini sangat berisiko karena banyak pola serangan malware yang ikut terbuang, sehingga model tidak belajar dari variasi malware yang sesungguhnya.
-2. Dataset usang — Dataset berasal dari tahun 2019, sementara penelitian dipublikasikan 2023. Para penulis sendiri mengakui ini di bagian kesimpulan. Artinya, performa 98.7% hanya berlaku untuk malware lama, bukan malware yang berkembang saat ini.
+1. Proxy labeling tanpa validasi — Label sentimen ditentukan langsung dari rating bintang tanpa pengecekan manual. Ini asumsi yang rawan salah karena pengguna sering memberi rating rendah karena masalah teknis sementara teksnya netral, atau sebaliknya.
+2. Pelaporan metrik tidak lengkap — Kesimpulan "kinerja terbaik" didasarkan pada akurasi saja tanpa menjadikan F1-Score sebagai primary metric, padahal distribusi kelas ulasan hampir pasti tidak seimbang (ulasan positif cenderung lebih sedikit dari negatif pada aplikasi banking).
 
 ---
 
@@ -117,16 +118,16 @@ Skenario: Seorang peneliti menemukan bahwa jika 3 data point outlier dihapus, ha
 
 ## Latihan 3 — Posisi Paradigma
 
-**Topik riset:**  Pengaruh penggunaan WhatsApp terhadap produktivitas belajar mahasiswa
+**Topik riset:** Perbandingan algoritma Naive Bayes dan SVM untuk klasifikasi sentimen ulasan aplikasi mobile banking Indonesia di Google Play Store
 
 | Kriteria | Positivis | Interpretivis | Design Science |
 |----------|-----------|---------------|----------------|
-| Kesesuaian dengan topik (1–5) | 5 | 3 | 2 |
-| Jenis data yang dikumpulkan | Data terukur: frekuensi penggunaan WhatsApp per hari, nilai IPK, jam belajar efektif mahasiswa | Wawancara mendalam tentang perasaan dan pengalaman mahasiswa saat belajar sambil buka WhatsApp | Membuat fitur/sistem baru di WhatsApp untuk membantu produktivitas belajar lalu diuji efektivitasnya |
-| Limitasi paradigma | Tidak menangkap alasan mendalam kenapa WhatsApp bisa mengganggu atau membantu belajar | Sulit direplikasi karena jawaban setiap mahasiswa berbeda-beda dan subjektif | Kurang cocok karena topik ini bukan tentang membangun sistem baru |
+| Kesesuaian dengan topik (1–5) | 4 | 2 | 5 |
+| Jenis data yang dikumpulkan | Data terukur: akurasi, F1-Score, Precision, Recall dari dua algoritma pada dataset yang sama | Wawancara mendalam tentang pengalaman pengguna memberi ulasan di Google Play | Membangun pipeline klasifikasi sentimen sebagai artefak, lalu menguji performa NB vs SVM |
+| Limitasi paradigma | Tidak menangkap nuansa bahasa informal Indonesia yang membuat teks sulit diklasifikasikan secara objektif | Sulit direplikasi dan tidak menghasilkan perbandingan algoritma yang terukur | Sedikit lebih kompleks karena melibatkan pembangunan artefak, tapi justru sesuai karena pipeline adalah instrumen uji |
 
-**Paradigma yang dipilih:** Positivis
-**Alasan:** Topik ini bisa diukur secara objektif. Variabel independennya jelas yaitu intensitas penggunaan WhatsApp, dan variabel dependennya terukur yaitu produktivitas belajar mahasiswa yang bisa dilihat dari IPK atau jam belajar efektif. Hasilnya bisa diuji ulang oleh peneliti lain dengan kondisi yang sama, sesuai prinsip positivisme.
+**Paradigma yang dipilih:** Design Science
+**Alasan:** Penelitian ini secara eksplisit membangun pipeline klasifikasi sentimen sebagai artefak — bukan hanya mengamati fenomena, melainkan merancang sistem yang dapat diuji. Artefak ini (pipeline NB vs SVM) berfungsi sebagai instrumen pengujian hipotesis: apakah SVM menghasilkan F1-Score lebih tinggi dari NB pada dataset ulasan mobile banking Indonesia. Ini sesuai dengan definisi Design Science Research di mana artefak dibuat untuk membuktikan klaim, bukan sebagai tujuan akhir.
 
 ---
 
@@ -135,5 +136,5 @@ Skenario: Seorang peneliti menemukan bahwa jika 3 data point outlier dihapus, ha
 > Sebelum membaca materi ini, apakah pernah mempertanyakan klaim "95% akurat"? Setelah memahami rantai distorsi, pertanyaan apa yang sekarang akan diajukan saat membaca paper?
 
 **Jawaban:**
-> Sebelum membaca materi ini, klaim "95% akurat" langsung dipercaya begitu saja tanpa mempertanyakan apapun. Angka yang besar terasa sudah cukup sebagai bukti bahwa metode tersebut memang bagus.
-> Setelah memahami rantai distorsi dari Reality hingga Knowledge, pertanyaan yang sekarang akan diajukan saat membaca paper adalah: Dataset apa yang digunakan dan seberapa representatif datanya? Apakah semua metrik dilaporkan atau hanya yang terlihat bagus saja? Apakah ada variabel lain yang ikut mempengaruhi hasil tanpa disadari? Dan apakah peneliti memiliki kepentingan pribadi terhadap metode yang diteliti?
+> Sebelum membaca materi ini, klaim "akurasi 91%" pada paper analisis sentimen langsung diterima sebagai bukti bahwa metode tersebut bagus. Angka besar terasa cukup meyakinkan.
+> Setelah memahami rantai distorsi dari Reality hingga Knowledge, pertanyaan yang sekarang akan diajukan saat membaca paper analisis sentimen adalah: Bagaimana label sentimen ditentukan — otomatis dari rating atau manual oleh anotator? Apakah dataset seimbang antar kelas positif, negatif, dan netral? Apakah F1-Score per kelas dilaporkan atau hanya akurasi keseluruhan? Dan apakah kedua algoritma yang dibandingkan diuji pada partisi data yang benar-benar identik?

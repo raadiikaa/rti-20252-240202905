@@ -61,52 +61,53 @@ Membandingkan deep learning 2024 dengan decision tree sederhana tanpa justifikas
 ```
 LITERATURE MAPPING
 
-Topik      : Deteksi Anomali Jaringan pada Aplikasi Mobile Banking Indonesia Menggunakan Machine Learning
+Topik      : Perbandingan Naive Bayes dan SVM untuk Analisis Sentimen Ulasan Aplikasi Mobile Banking Indonesia di Google Play Store
 Database   : IEEE Xplore, Scopus, ACM Digital Library, Google Scholar
-Query      : ("mobile banking" OR "mbanking") AND ("network anomaly detection" OR "intrusion detection" OR "MITM detection") AND ("machine learning" OR "deep learning" OR "anomaly detection") AND ("Indonesia" OR "developing countries") AND ("network traffic" OR "TLS" OR "API security")
-Tahun      : 2019–2024
-Hasil awal : 134 paper → Screening (judul + abstrak) → 41 paper → Full-text review → 18 paper final
+Query      : ("sentiment analysis" OR "opinion mining") AND ("Naive Bayes" OR "Support Vector Machine" OR "SVM") AND ("mobile banking" OR "banking application" OR "fintech") AND ("Google Play" OR "app review") AND ("Indonesia" OR "Indonesian text" OR "Bahasa Indonesia")
+Tahun      : 2020–2025
+Hasil awal : 89 paper → Screening judul+abstrak → 27 paper → Full-text → 8 paper final
 
 Literature Matrix (concept-centric):
 
-| Study | Tahun | Method | Data | Result | Limitation |
-|-------|-------|--------|------|--------|------------|
-| Apruzzese et al. | 2022 | Random Forest + TLS traffic fingerprint | CICIDS-2018 (sintetis, lab) | F1-score 94.2% deteksi MITM | Dataset sintetis; tidak diuji pada mobile banking nyata |
-| Suryani & Wibowo | 2023 | LSTM Autoencoder pada API call sequence | 1 bank Indonesia (privat, jaringan kampus) | AUC-ROC 0.91 | Dataset privat; 1 institusi; tidak ada WiFi publik |
-| Zhang et al. | 2022 | GNN pada pola koneksi jaringan mobile | UNSW-NB15 + simulasi Android | Precision 89%, Recall 91% | Overhead tinggi; bukan konteks banking |
-| Iqbal et al. | 2021 | Isolation Forest + SHAP | 12 app perbankan Asia Selatan | Akurasi 87.3% (turun ke 71.2% di RAM < 3 GB) | Tidak ada aplikasi Indonesia; FPR tidak diukur |
-| Firmansyah et al. | 2023 | CNN-1D pada fitur statistik paket | 5 bank Indonesia, WiFi kampus (N=4.200) | Akurasi 88% | Dataset kecil; jaringan terkontrol; tidak ada WiFi publik komersial |
-| Meng et al. | 2020 | Hybrid SVM + Autoencoder | 8 app mobile banking Asia Tenggara | Recall 92% SSL stripping; Precision 84% | Tidak ada aplikasi Indonesia; tidak ada evaluasi OWASP/regulasi |
-| Hussain et al. | 2021 | XGBoost + Bayesian tuning | CTU-13 + custom simulasi lab | AUC 0.96; F1 turun ke 0.79 di real traffic | Gap lab vs real-world; tidak ada analisis latensi |
-| Purnama & Hidayat | 2024 | Transformer (DistilBERT) pada API request sequence | Log fintech Indonesia anonim | Precision 91% deteksi anomali session | Model terlalu berat (1.2 GB); tidak bisa di-deploy edge |
+| Study | Tahun | Method | Dataset | Result | Limitation |
+|-------|-------|--------|---------|--------|------------|
+| Andrian et al. | 2022 | NB, SVM, Decision Tree | Digital banking Indonesia, media sosial | SVM akurasi 84% | Bukan Google Play; teks campuran media sosial, bukan ulasan terstruktur |
+| Santoso et al. | 2025 | KNN, SVM, RF, NB | 6.000 ulasan BRI & BSI, Google Play 2024 | NB & RF terbaik, akurasi 81% (BRI) | Hanya 2 bank; F1 per kelas tidak jadi primary metric; 6 bulan saja |
+| Edwina & Mauritsius | 2024 | SVM, NB, KNN, RF, LR + IndoBERT | 7.000+ ulasan SimobiPlus | SVM 91% akurasi (hyperparameter tuning) | Hanya 1 bank; tidak ada uji statistik signifikansi |
+| Universitas Indonesia (Wisnu et al.) | 2021 | Naive Bayes + LDA | 6.194 ulasan mobile banking, Google Play | NB akurasi 86.76%, recall 93.47% | Hanya NB, tidak ada pembanding; hanya 2 kelas (positif/negatif) |
+| Samudera et al. | 2024 | Multinomial NB | Ulasan BSI Mobile & Action Mobile, Google Play | Akurasi baik, split 80:20 | Hanya NB, tidak ada pembanding SVM; hanya 2 bank syariah |
+| Wattimena et al. (JUSTIN) | 2025 | SVM vs NB + TF-IDF | NLP data Indonesia 2020–2023 (bukan banking) | SVM lebih baik: Jawa 76%, Sunda 80% vs NB Jawa 73%, Sunda 77% | Bukan domain banking; bukan Google Play; bukan Bahasa Indonesia standar |
+| IJSRA (anonim) | 2025 | NB vs SVM + TF-IDF | E-commerce Indonesia (marketplace) | SVM 89.5% vs NB 84.2% | Domain e-commerce, bukan banking; tidak ada uji statistik |
+| Rahman & Irwiensyah | 2024 | NB | 2.000 ulasan BCA Mobile, Google Play Jan 2024 | Akurasi 86.83%, precision 52.78%, recall 46.91% | Hanya NB; tidak ada pembanding; precision rendah tidak dianalisis |
 
 Pola yang ditemukan:
-  Metode dominan     : Supervised (RF, XGBoost) dan Hybrid/Unsupervised (Autoencoder, Isolation Forest) — transformer baru muncul di 2024 tapi terlalu berat untuk deployment
-  Dataset umum       : CICIDS-2018, UNSW-NB15 (sintetis/lab) — mayoritas tidak menggunakan data mobile banking Indonesia yang nyata
-  Limitasi berulang  : (1) Dataset dari lab/jaringan kampus, bukan WiFi publik komersial; (2) Tidak ada evaluasi di perangkat low-spec; (3) Tidak ada korelasi ke regulasi OJK atau OWASP MASVS
+  Metode dominan     : NB dan SVM paling sering digunakan; SVM cenderung lebih unggul pada teks Indonesia (dari studi non-banking)
+  Dataset umum       : Google Play Store ulasan mobile banking Indonesia, umumnya 1–7 ribu ulasan per studi; mayoritas menggunakan 1–2 aplikasi saja
+  Limitasi berulang  : (1) Studi hanya menggunakan satu algoritma tanpa pembanding; (2) Tidak ada uji statistik signifikansi antar algoritma(3) Evaluasi tidak lengkap — banyak yang hanya laporkan 
 
 GAP IDENTIFICATION
 
-Gap 1: [Jenis: Context Gap + Data Gap ]
-  Deskripsi    : Tidak ada studi yang mengevaluasi sistem deteksi anomali ML pada traffic mobile banking spesifik Indonesia dengan dataset dari jaringan WiFi publik komersial (mall, kafe, transportasi umum)
-  Bukti        : Suryani & Wibowo (2023) hanya 1 bank, jaringan kampus. Firmansyah et al. (2023) juga lingkungan kampus terkontrol. Meng et al. (2020) tidak mencakup aplikasi Indonesia
-  Signifikansi : Karakteristik traffic WiFi publik Indonesia berbeda — heterogenitas ISP, noise pattern, pola penggunaan — yang mempengaruhi distribusi fitur input model ML
+Gap 1: [Jenis: Method Gap + Context Gap ]
+  Deskripsi    : Belum ada studi yang secara eksplisit membandingkan NB vs SVM dengan kondisi eksperimen identik (TF-IDF, split, preprocessing sama) pada ulasan mobile banking berbahasa Indonesia di Google Play
+  Bukti        : Santoso et al. (2025) membandingkan 4 algoritma tapi tidak fokus NB vs SVM; Edwina & Mauritsius (2024) hanya 1 bank; studi yang fokus NB vs SVM (Wattimena, IJSRA) bukan domain banking
+  Signifikansi : Tanpa perbandingan terkontrol, pengembang tidak bisa memilih algoritma dengan keyakinan empiris untuk konteks banking Indonesia
 
-Gap 2: [Jenis: Method Gap + Performance Gap ]
-  Deskripsi    : Tidak ada studi komparatif yang membandingkan lightweight ML models (Isolation Forest, LSTM-AE kecil) vs heavy models (GNN, Transformer) secara eksplisit dari sisi akurasi-latensi trade-off pada perangkat Android low-spec (RAM ≤ 3 GB)
-  Bukti        : Iqbal et al. (2021) mencatat penurunan akurasi dari 87.3% ke 71.2% tapi tidak mengidentifikasi model alternatif yang lebih efisien. Purnama & Hidayat (2024) mengakui model tidak deployable di edge
-  Signifikansi : Indonesia memiliki penetrasi Android low-spec sangat tinggi; sistem deteksi yang tidak berjalan di perangkat user tidak memberikan proteksi real-time
+Gap 2: [Jenis: Method Gap ]
+  Deskripsi    : Tidak ada studi yang menggunakan uji statistik (Wilcoxon/t-test) untuk membuktikan perbedaan performa NB vs SVM signifikan secara statistik — semua hanya membandingkan angka akurasi secara deskriptif
+  Bukti        : Dari 8 paper final, nol yang menyebut p-value atau effect size dalam perbandingan algoritma
+  Signifikansi : Perbedaan akurasi 5% bisa jadi noise statistik biasa, bukan perbedaan nyata — tanpa uji statistik, klaim "algoritma X lebih baik" tidak dapat dipertahankan secara ilmiah
 
-Gap 3: [ Context Gap ]
-  Deskripsi    : Tidak ada studi yang mengevaluasi sistem deteksi anomali ML dalam konteks kepatuhan regulasi OJK POJK 21/2022 dan OWASP MASVS
-  Bukti        : Dari 8 paper final, nol yang menyebut OJK atau regulasi perbankan Indonesia
-  Signifikansi : Penelitian tanpa konteks regulasi tidak dapat langsung diadopsi oleh bank Indonesia — ini hambatan nyata transfer pengetahuan ke industri
+Gap 3: [ Data Gap ]
+  Deskripsi    : Studi yang ada menggunakan 1–2 aplikasi saja — belum ada yang membandingkan NB vs SVM pada dataset multi-bank (3+ aplikasi besar) agar hasil lebih representatif untuk industri perbankan Indonesia
+  Bukti        :  Santoso et al. (2025) hanya BRI & BSI; Edwina (2024) hanya SimobiPlus; Rahman (2024) hanya BCA; tidak ada yang gabungkan 3 bank besar konvensional sekaligus
+  Signifikansi : Dataset dari 1–2 bank rentan bias terhadap karakteristik spesifik aplikasi tersebut; multi-bank dataset menghasilkan temuan yang lebih 
+  generalizable untuk industri
 
 Baseline Selection:
 | Baseline | Relevansi | Representatif | Source |
 |----------|-----------|---------------|--------|
-| Isolation Forest pada TLS/network metadata | Task sama: deteksi anomali unsupervised di traffic mobile; tidak perlu labeled dataset besar | Digunakan di 4 dari 8 paper final sebagai komponen utama | Iqbal et al. (2021); Hussain et al. (2021) |
-| LSTM Autoencoder 2-layer (Suryani & Wibowo, 2023) | Satu-satunya studi sequence-based anomaly detection pada API call mobile banking Indonesia | State-of-local-practice — referensi terbaru dan paling kontekstual | Suryani & Wibowo (2023) |
+| Naive Bayes (MultinomialNB + TF-IDF) | Task identik: klasifikasi sentimen teks ulasan banking Indonesia; paling sering digunakan sebagai metode utama | Muncul di 5 dari 8 paper final sebagai metode utama atau pembanding | Santoso et al. (2025); Samudera et al. (2024); Rahman & Irwiensyah (2024) |
+| SVM dengan TF-IDF (Edwina & Mauritsius, 2024) | Satu-satunya studi yang menunjukkan SVM 91% pada ulasan mobile banking Indonesia dengan hyperparameter tuning | State-of-local-practice: studi terbaru (2024) pada domain mobile banking Indonesia | Edwina & Mauritsius (2024) |
 ```
 
 ---
@@ -115,27 +116,24 @@ Baseline Selection:
 
 Gunakan topik riset dari WS-02. Cari minimal 5 paper relevan menggunakan Google Scholar atau database lain.
 
-**Topik riset:** Deteksi Anomali Jaringan pada Aplikasi Mobile Banking Indonesia Menggunakan Machine Learning
-**Query pencarian:** ("mobile banking" OR "mbanking") AND ("anomaly detection" OR "intrusion detection"
-OR "MITM detection") AND ("machine learning" OR "deep learning") AND ("Indonesia"
-OR "developing countries") AND ("network traffic" OR "TLS" OR "API security")
-**Database:** IEEE Xplore, Scopus, ACM Digital Library, Google Scholar
+**Topik riset:** Perbandingan NB dan SVM untuk Analisis Sentimen Ulasan Mobile Banking Indonesia
+**Query pencarian:** ("sentiment analysis") AND ("Naive Bayes" OR "SVM") AND ("mobile banking" OR "banking app") AND ("Google Play" OR "Indonesia")
+**Database:** Google Scholar, IEEE Xplore, Scopus, Semantic Scholar
 
 | # | Study | Tahun | Method | Dataset | Result | Limitasi |
 |---|-------|-------|--------|---------|--------|----------|
-| 1 | Apruzzese et al. | 2022 | Random Forest + TLS fingerprint | CICIDS-2018 (sintetis, lab) | F1-score 94.2% deteksi MITM | Dataset sintetis; tidak diuji pada aplikasi mobile banking nyata |
-| 2 | Suryani & Wibowo | 2023 | LSTM Autoencoder pada API call sequence | 1 bank Indonesia (privat, jaringan kampus) | AUC-ROC 0.91 | Dataset privat; 1 institusi; tidak ada perbandingan model; tidak ada WiFi publik |
-| 3 | Zhang et al. | 2022 | GNN pada pola koneksi jaringan mobile | UNSW-NB15 + simulasi Android | Precision 89%, Recall 91% | Overhead tinggi; bukan konteks banking |
-| 4 | Iqbal et al. | 2021 | Isolation Forest + SHAP | 12 app perbankan Asia Selatan | Akurasi 87.3% (turun 71.2% di RAM < 3 GB) | Tidak ada aplikasi Indonesia; FPR tidak diukur |
-| 5 | Firmansyah et al. | 2023 | CNN-1D pada fitur statistik paket | 5 bank Indonesia, WiFi kampus (N=4.200) | Akurasi 88% | Dataset kecil; jaringan terkontrol; tidak ada WiFi publik komersial |
-| 6 | Meng et al. | 2020 | Hybrid SVM + Autoencoder | 8 app mobile banking Asia Tenggara | Recall 92% SSL stripping; Precision 84% | Tidak ada aplikasi Indonesia; tidak ada evaluasi OWASP/regulasi |
-| 7 | Hussain et al. | 2021 | XGBoost + Bayesian tuning | CTU-13 + custom simulasi lab | AUC 0.96; F1 turun ke 0.79 di real traffic | Gap lab vs real-world; tidak ada analisis lat ensi|
-| 8 | Purnama & Hidayat | 2024 | Transformer (DistilBERT) pada API request sequence | Log fintech Indonesia anonim | Precision 91% deteksi anomali session | Model terlalu berat (1.2 GB); tidak bisa di-deploy edge; tanpa perbandingan baseline |
+| 1 | Santoso et al. | 2025 | KNN, SVM, RF, NB | 6.000 ulasan BRI & BSI (Google Play) | NB & RF terbaik; akurasi 81% (BRI) & 78% (BSI) | Hanya 2 bank; F1 bukan metrik utama; periode terbatas |
+| 2 | Edwina & Mauritsius | 2024 | SVM, NB, KNN, RF + IndoBERT | 7.000+ ulasan SimobiPlus | SVM akurasi 91% setelah tuning | Hanya 1 bank; tidak ada uji statistik signifikansi |
+| 3 | Rahman & Irwiensyah | 2024 | Multinomial NB | 2.000 ulasan BCA Mobile | Akurasi 86.83%; precision 52.78% | Hanya NB; tidak ada pembanding; precision rendah tidak dianalisis |
+| 4 | Samudera et al. | 2024 | Multinomial NB | Ulasan BSI Mobile & Action Mobile | Akurasi baik; split data 80:20 | Hanya NB; tidak ada pembanding SVM |
+| 5 | Wisnu et al. (UI) | 2021 | NB + LDA | 6.194 ulasan mobile banking (Google Play) | Akurasi 86.76%; recall 93.47% | Hanya NB; hanya 2 kelas sentimen; tidak ada pembanding |
+| 6 | Andrian et al. | 2022 | NB, SVM, Decision Tree | Digital banking Indonesia (Media Sosial) | SVM akurasi 84% | Bukan Google Play; data tidak terstruktur |
+| 7 | Wattimena et al. | 2025 | SVM vs NB + TF-IDF | NLP Indonesia (Bahasa Jawa & Sunda) | SVM lebih unggul dari NB di kedua bahasa | Bukan perbankan; bukan Bahasa Indonesia standar |
+| 8 | IJSRA | 2025 | NB vs SVM + TF-IDF | E-commerce Indonesia | SVM 89.5% vs NB 84.2% | Domain e-commerce; tidak ada uji statistik |
 
 
-**Pola yang terlihat — Metode dominan:** Supervised (RF, XGBoost) dan Hybrid/Unsupervised (Autoencoder, Isolation Forest); transformer baru muncul 2024 tapi terlalu berat untuk deployment
-**Limitasi yang berulang:** (1) Dataset dari lab/jaringan kampus, bukan WiFi publik komersial; (2) Tidak ada evaluasi di perangkat low-spec; (3) Tidak ada korelasi ke regulasi OJK atau OWASP MASVS
-
+**Pola yang terlihat — Metode dominan:** NB paling sering dipakai sendiri; SVM muncul dalam studi komparatif dan cenderung lebih unggul; tidak ada yang melakukan uji statistik signifikansi
+**Limitasi yang berulang:** (1) Hanya 1–2 bank per studi; (2) NB dipakai tanpa pembanding; (3) Tidak ada uji statistik untuk membuktikan perbedaan signifikan
 ---
 
 ## Latihan 2 — Gap Identification
@@ -144,14 +142,14 @@ Berdasarkan tabel di Latihan 1, identifikasi gap.
 
 | Jenis Gap | Ditemukan? | Gap Statement |
 |-----------|-----------|---------------|
-| Performance Gap | [ ✅ ] Ya / [ ] Tidak | Akurasi model turun signifikan (87.3% → 71.2%) saat dijalankan di perangkat Android low-spec (RAM ≤ 3 GB), namun tidak ada studi yang mendesain model dengan trade-off akurasi-efisiensi untuk perangkat tersebut |
-| Method Gap | [ ✅ ] Ya / [ ] Tidak | Belum ada studi yang membandingkan lightweight ML models (Isolation Forest, LSTM-AE kecil) versus heavy models (GNN, Transformer) secara eksplisit menggunakan metrik akurasi + latensi + memory footprint sekaligus dalam konteks mobile banking |
-| Data Gap | [ ✅ ] Ya / [ ] Tidak | Semua studi yang relevan menggunakan dataset sintetis (CICIDS, UNSW-NB15), data jaringan kampus/lab, atau dataset privat satu institusi — tidak ada yang merepresentasikan kondisi WiFi publik komersial Indonesia |
-| Context Gap | [ ✅ ] Ya / [ ] Tidak | Tidak ada studi yang mengevaluasi sistem deteksi anomali ML pada mobile banking Indonesia dalam kerangka OJK POJK 21/2022 dan OWASP MASVS, sehingga hasil penelitian tidak dapat langsung diterjemahkan ke rekomendasi compliance |
+| Performance Gap | [ ✅ ] Ya / [ ] Tidak | Precision NB rendah (52.78%) pada ulasan BCA Mobile (Rahman 2024) namun tidak ada studi yang menguji apakah SVM dapat memperbaiki kelemahan ini secara signifikan pada konteks yang sama |
+| Method Gap | [ ✅ ] Ya / [ ] Tidak | Belum ada studi yang menggunakan uji statistik (Wilcoxon/paired t-test) untuk membuktikan perbedaan F1-Score NB vs SVM signifikan — semua perbandingan hanya deskriptif |
+| Data Gap | [ ✅ ] Ya / [ ] Tidak | Semua studi menggunakan 1–2 aplikasi banking — belum ada yang menggabungkan 3 bank konvensional besar (BCA, Mandiri, BRI) dalam satu dataset untuk hasil yang lebih representatif |
+| Context Gap | [ ✅ ] Ya / [ ] Tidak | Studi NB vs SVM yang ada menggunakan domain e-commerce atau media sosial, bukan ulasan mobile banking terstruktur dari Google Play yang memiliki karakteristik linguistik berbeda |
 
-**Gap utama yang dipilih:** Context Gap + Data Gap (kombinasi Gap 1 dan Gap 3)
+**Gap utama yang dipilih:** Method Gap + Context Gap
 **Mengapa gap ini penting (bukan sekadar "belum ada yang meneliti")?**
-> Gap ini penting karena dampaknya bersifat ganda: praktis dan regulatoris. Secara praktis, sistem deteksi anomali yang tidak diuji di kondisi nyata jaringan WiFi publik Indonesia — dengan heterogenitas ISP, interferensi, dan pola pengguna yang berbeda dari dataset lab barat — berpotensi menghasilkan false positive rate tinggi yang mengganggu pengalaman pengguna, atau false negative yang meloloskan serangan nyata. Secara regulatoris, tanpa pemetaan eksplisit ke OJK POJK 21/2022, hasil penelitian tidak bisa langsung diadopsi oleh bank — ini bukan masalah akademik, melainkan hambatan nyata transfer pengetahuan ke industri. Kombinasi kedua gap ini berarti ada kebutuhan yang belum terpenuhi: penelitian yang menghasilkan sistem tervalidasi di kondisi lapangan Indonesia sekaligus menghasilkan panduan compliance yang actionable.
+> Gap ini penting karena dua alasan yang saling memperkuat. Pertama, secara metodologis: perbandingan algoritma tanpa uji statistik tidak dapat dipercaya — perbedaan F1 sebesar 5% antara NB dan SVM bisa jadi hanya noise dari partisi data yang berbeda, bukan bukti keunggulan nyata. Tanpa p-value dan effect size, klaim "SVM lebih baik" hanyalah anekdot, bukan temuan ilmiah. Kedua, secara kontekstual: ulasan mobile banking Indonesia memiliki karakteristik unik — bahasa informal, campur kode, keluhan teknis spesifik perbankan — yang berbeda dari e-commerce atau media sosial, sehingga temuan dari domain lain tidak bisa langsung ditransfer. Kombinasi kedua gap ini berarti pengembang aplikasi banking tidak memiliki panduan berbasis bukti yang rigorous dan kontekstual untuk memilih algoritma klasifikasi sentimen.
 
 ---
 
@@ -161,11 +159,11 @@ Pilih 2 baseline dari literatur yang sudah dibaca.
 
 | # | Baseline | Mengapa Relevan | Mengapa Representatif | Apakah SOTA? | Sumber |
 |---|----------|----------------|----------------------|-------------|--------|
-| 1 | Isolation Forest pada TLS/network metadata | Secara langsung menyelesaikan task yang sama: deteksi anomali unsupervised di traffic jaringan mobile tanpa memerlukan labeled dataset besar. Cocok untuk konteks Indonesia di mana data berlabel berkualitas sangat terbatas |Digunakan di 4 dari 8 paper final sebagai komponen utama atau baseline — standard practice yang diakui komunitas network anomaly detection | Bukan SOTA mutlak, tapi best practice efisien yang dapat di-deploy di edge device — benchmark yang jujur untuk perbandingan di perangkat low-spec | Iqbal et al. (2021); Hussain et al. (2021); Apruzzese et al. (2022) |
-| 2 | LSTM Autoencoder 2-layer (Suryani & Wibowo, 2023) | Satu-satunya studi sequence-based anomaly detection pada API call traffic mobile banking Indonesia — task, domain, dan konteks lokal identik dengan penelitian ini | Merupakan state-of-local-practice: referensi terbaru dan paling kontekstual untuk mobile banking Indonesia, menjadi anchor perbandingan agar hasil riset ini dapat langsung diposisikan relatif terhadap karya terbaik yang ada di domain lokal | Ya, dalam konteks Indonesia: studi terbaru (2023) dan paling relevan secara geografis dan kontekstual | Suryani & Wibowo (2023) |
+| 1 | Multinomial Naive Bayes + TF-IDF | Task identik: klasifikasi sentimen teks ulasan mobile banking Indonesia berbahasa Indonesia menggunakan TF-IDF | Digunakan di 5 dari 8 paper final — metode paling umum di domain ini, menjadi common practice yang harus dilampaui | Ya, dalam konteks lokal: studi terbaru (2024–2025) masih menggunakannya sebagai metode utama | Santoso et al. (2025); Samudera et al. (2024); Rahman & Irwiensyah (2024) |
+| 2 | SVM + TF-IDF dengan hyperparameter tuning (Edwina & Mauritsius, 2024) | Studi terbaru yang menunjukkan performa SVM tertinggi (91%) pada ulasan mobile banking Indonesia — task, domain, dan konteks lokal paling mendekati penelitian ini | State-of-local-practice: satu-satunya studi 2024 yang melaporkan SVM pada mobile banking Indonesia dengan hasil yang signifikan | Ya: studi terbaru (2024) dengan akurasi tertinggi yang dilaporkan untuk domain ini | Edwina & Mauritsius (2024) |
 
 **Apakah pemilihan baseline ini bisa dianggap straw man?** [ ] Ya / [ ✅ ] Tidak
-> Justifikasi: Kedua baseline dipilih secara deliberatif berdasarkan relevansi task dan representativitas dalam literatur, bukan karena dianggap lemah. Isolation Forest dipilih karena merupakan common practice yang diakui industri dan komunitas riset — mengalahkannya membuktikan nilai tambah riset ini. LSTM Autoencoder Suryani & Wibowo (2023) dipilih karena merupakan studi terbaik yang tersedia di konteks Indonesia, bukan karena merupakan metode primitif. Memilih keduanya berarti riset ini harus membuktikan kontribusinya terhadap baseline yang sudah cukup kuat, bukan hanya menang atas metode yang sengaja dilemahkan.
+> Kedua baseline dipilih karena relevansi dan kekuatannya, bukan karena lemah. NB dipilih karena merupakan common practice yang diakui — mengunggulinya membuktikan nilai SVM. SVM Edwina (2024) dipilih karena merupakan hasil terbaik yang ada di domain ini — penelitian ini harus membuktikan apakah keunggulan SVM konsisten di dataset yang lebih luas (3 bank, bukan 1).
 
 ---
 
@@ -174,6 +172,6 @@ Pilih 2 baseline dari literatur yang sudah dibaca.
 > Apa perbedaan antara "belum ada yang meneliti ini" (klaim tanpa bukti) dengan research gap yang valid? Bagaimana cara membuktikan bahwa sebuah gap benar-benar ada?
 
 **Jawaban:**
-> Klaim "belum ada yang meneliti" adalah pernyataan kosong jika tidak disertai bukti sistematis tentang apa yang sudah ditelusuri, di mana, dan bagaimana. Ini setara dengan mengatakan "restoran ini satu-satunya di kota" tanpa pernah mengecek seluruh kota. Sebaliknya, research gap yang valid adalah ketidakhadiran yang terdokumentasi: kita sudah mencari secara sistematis di database yang relevan dengan query yang eksplisit, menemukan apa yang ada, menganalisis batas-batasnya, dan barulah menyatakan bahwa kombinasi tertentu — misalnya metode X pada konteks Y dengan dataset Z — belum pernah diteliti. Perbedaannya bukan soal kesimpulan akhir, melainkan soal kualitas prosesnya.
-> Cara membuktikan gap benar-benar ada ada tiga lapis. Pertama, tunjukkan search trail yang reproducible: database apa yang digunakan, query Boolean yang dipakai, tahun filter, dan berapa paper yang ditemukan sebelum dan sesudah screening. Kedua, buat literature matrix yang concept-centric dan tunjukkan secara eksplisit bahwa tidak ada sel yang mengisi kombinasi [metode] × [konteks] × [variabel] yang diklaim kosong. Ketiga, identifikasi mengapa gap itu penting — bukan hanya karena belum ada, tapi karena ketidakhadirannya menimbulkan konsekuensi nyata: keputusan yang dibuat ad-hoc, sistem yang tidak optimal, atau regulasi yang tidak terpenuhi.
-Dalam penelitian ini, gap bukan hanya soal "belum ada studi ML deteksi anomali mobile banking Indonesia di WiFi publik", melainkan karena ketiadaan studi itu membuat bank-bank Indonesia tidak punya panduan berbasis bukti untuk memilih dan mengkonfigurasi sistem deteksi yang sesuai regulasi OJK di kondisi jaringan nyata. Singkatnya: gap bukan sekadar kekosongan, melainkan kekosongan yang teridentifikasi, terdokumentasi, dan berdampak. Tanpa ketiga elemen itu, klaim gap hanya retorika.
+> Klaim "belum ada yang meneliti" tanpa bukti adalah pernyataan yang tidak bisa diverifikasi dan mudah dipatahkan oleh satu paper yang terlewat. Research gap yang valid sebaliknya adalah ketidakhadiran yang terdokumentasi: peneliti sudah mencari secara sistematis, menemukan apa yang ada, menganalisis batas-batasnya, dan barulah menyatakan bahwa kombinasi tertentu belum diteliti dengan bukti konkret.
+
+> Dalam penelitian ini, gap bukan sekadar "belum ada yang bandingkan NB vs SVM pada mobile banking Indonesia", melainkan lebih spesifik: belum ada yang melakukan perbandingan dengan kondisi eksperimen yang benar-benar terkontrol (preprocessing, TF-IDF, dan split identik), pada dataset multi-bank (3 aplikasi besar), dan disertai uji statistik signifikansi. Ketiga elemen ini — kontrol eksperimen, cakupan data, dan rigor statistik — yang menjadikan gap ini nyata dan berdampak, bukan sekadar retorika.

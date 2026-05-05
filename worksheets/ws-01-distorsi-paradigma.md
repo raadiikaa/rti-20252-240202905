@@ -88,7 +88,7 @@ Pilih satu paper riset di bidang TI yang mengklaim "metode X meningkatkan perfor
 | Tahap | Apa yang Dilakukan | Potensi Distorsi |
 |-------|-------------------|-----------------|
 | Reality → Data | Mengumpulkan 6.000 ulasan aplikasi BRI dan BSI dari Google Play Store periode Januari–Juli 2024 | Hanya mencakup 2 aplikasi dari periode 6 bulan — tidak merepresentasikan keseluruhan pengguna mobile banking Indonesia yang lebih beragam |
-| Data → Processing | Rating bintang digunakan sebagai proxy label sentimen tanpa validasi manual — ulasan bintang 1 bisa berisi pujian dan sebaliknya |
+| Data → Processing | Preprocessing teks: case folding, tokenisasi, stopword removal, stemming, lalu labeling sentimen berdasarkan rating bintang |Rating bintang digunakan sebagai proxy label sentimen tanpa validasi manual — ulasan bintang 1 bisa berisi pujian dan sebaliknya |
 | Processing → Analysis | Membandingkan KNN, SVM, Random Forest, dan Naive Bayes menggunakan metrik akurasi, precision, recall, F1-score | Tidak dilaporkan apakah data seimbang antar kelas — jika kelas positif dominan, akurasi tinggi bisa menyesatkan |
 | Analysis → Inference | Menyimpulkan Random Forest dan Naive Bayes memiliki kinerja terbaik dengan akurasi tertinggi 81% (BRI) dan 78% (BSI) | Kesimpulan "terbaik" hanya berdasarkan akurasi — F1-Score per kelas tidak dijadikan primary metric padahal data kemungkinan tidak seimbang |
 | Inference → Knowledge | Mengklaim Naive Bayes dan Random Forest cocok untuk analisis sentimen ulasan mobile banking Indonesia | Klaim terlalu luas: hasil hanya dari 2 bank dalam 6 bulan, belum diuji pada bank lain atau periode berbeda |

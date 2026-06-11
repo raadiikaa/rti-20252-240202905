@@ -82,22 +82,24 @@ Tanggal          : Minggu, 12 April 2026
 Pilih satu paper riset di bidang TI yang mengklaim "metode X meningkatkan performa." Telusuri setiap tahap Research Trust Model.
 
 **Paper yang dipilih:**
-> Judul: Sentiment Analysis of Mobile Banking Reviews Using Machine Learning Models
-> Penulis (Tahun): Santoso et al. (2025)
+> Judul: Analisis Sentimen Ulasan Aplikasi Perbankan di Google Play Store menggunakan Algoritma Support Vector Machine
+> Penulis (Tahun): Prasetyo, M. J., & Agastya, I. M. A. (2024)
+Jurnal: Sistemasi: Jurnal Sistem Informasi, Vol. 13, No. 6, 2024: 2386–2400
+Link: https://sistemasi.ftik.unisi.ac.id/index.php/stmsi/article/view/4536
 
 | Tahap | Apa yang Dilakukan | Potensi Distorsi |
 |-------|-------------------|-----------------|
-| Reality → Data | Mengumpulkan 6.000 ulasan aplikasi BRI dan BSI dari Google Play Store periode Januari–Juli 2024 | Hanya mencakup 2 aplikasi dari periode 6 bulan — tidak merepresentasikan keseluruhan pengguna mobile banking Indonesia yang lebih beragam |
-| Data → Processing | Preprocessing teks: case folding, tokenisasi, stopword removal, stemming, lalu labeling sentimen berdasarkan rating bintang |Rating bintang digunakan sebagai proxy label sentimen tanpa validasi manual — ulasan bintang 1 bisa berisi pujian dan sebaliknya |
-| Processing → Analysis | Membandingkan KNN, SVM, Random Forest, dan Naive Bayes menggunakan metrik akurasi, precision, recall, F1-score | Tidak dilaporkan apakah data seimbang antar kelas — jika kelas positif dominan, akurasi tinggi bisa menyesatkan |
-| Analysis → Inference | Menyimpulkan Random Forest dan Naive Bayes memiliki kinerja terbaik dengan akurasi tertinggi 81% (BRI) dan 78% (BSI) | Kesimpulan "terbaik" hanya berdasarkan akurasi — F1-Score per kelas tidak dijadikan primary metric padahal data kemungkinan tidak seimbang |
-| Inference → Knowledge | Mengklaim Naive Bayes dan Random Forest cocok untuk analisis sentimen ulasan mobile banking Indonesia | Klaim terlalu luas: hasil hanya dari 2 bank dalam 6 bulan, belum diuji pada bank lain atau periode berbeda |
+| Reality → Data | Mengumpulkan ulasan aplikasi perbankan dari Google Play Store dan melabeli sentimen berdasarkan rating bintang | Dataset hanya dari periode dan aplikasi tertentu — tidak merepresentasikan keseluruhan pengguna mobile banking Indonesia yang lebih beragam |
+| Data → Processing | Preprocessing teks: case folding, tokenisasi, stopword removal, stemming, lalu representasi fitur menggunakan TF-IDF |Rating bintang digunakan sebagai proxy label sentimen tanpa validasi manual — ulasan bintang 1 bisa berisi keluhan teknis sementara yang bersifat netral, bukan sentimen negatif permanen |
+| Processing → Analysis | Mengklasifikasikan sentimen menggunakan algoritma SVM dan mengevaluasi dengan akurasi, precision, recall, F1-score | Tidak dilaporkan secara eksplisit apakah distribusi kelas seimbang — jika kelas positif sangat dominan, akurasi tinggi bisa menyesatkan |
+| Analysis → Inference | Menyimpulkan SVM efektif untuk klasifikasi sentimen ulasan aplikasi perbankan di Google Play Store | Kesimpulan belum disertai uji statistik signifikansi — perbedaan performa antara kondisi berbeda hanya dibandingkan secara deskriptif tanpa p-value atau effect size |
+| Inference → Knowledge | Mengklaim SVM dapat digunakan untuk analisis sentimen ulasan banking Indonesia | Klaim terlalu luas: hasil hanya dari satu studi dengan kondisi spesifik, belum dibandingkan secara terkontrol dengan algoritma lain pada dataset yang identik |
 
 **Distorsi paling besar di tahap:** Processing → Analysis
 
 **Dua distorsi spesifik yang teridentifikasi:**
-1. Proxy labeling tanpa validasi — Label sentimen ditentukan langsung dari rating bintang tanpa pengecekan manual. Ini asumsi yang rawan salah karena pengguna sering memberi rating rendah karena masalah teknis sementara teksnya netral, atau sebaliknya.
-2. Pelaporan metrik tidak lengkap — Kesimpulan "kinerja terbaik" didasarkan pada akurasi saja tanpa menjadikan F1-Score sebagai primary metric, padahal distribusi kelas ulasan hampir pasti tidak seimbang (ulasan positif cenderung lebih sedikit dari negatif pada aplikasi banking).
+1. Proxy labeling tanpa validasi — Label sentimen ditentukan langsung dari rating bintang tanpa pengecekan manual. Ini asumsi yang rawan salah karena pengguna sering memberi rating rendah karena masalah teknis sementara teksnya netral, atau sebaliknya memberi rating tinggi sambil menyisipkan keluhan.
+2. Tidak ada uji statistik — Perbandingan performa hanya dilakukan secara deskriptif dengan membandingkan angka akurasi. Tanpa uji statistik (seperti Wilcoxon atau t-test) dan effect size, tidak bisa dipastikan apakah perbedaan yang dilaporkan signifikan secara statistik atau hanya variasi acak.
 
 ---
 

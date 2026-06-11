@@ -79,7 +79,7 @@ System Context
   Stakeholders: Pengembang aplikasi mobile banking, tim product & UX bank, peneliti NLP bahasa Indonesia, pengguna aplikasi mobile banking
 
 Fenomena → Problem
-  Fenomena yang diamati             : utaan ulasan pengguna aplikasi mobile banking Indonesia tersedia di Google Play Store, namun sebagian besar tidak dianalisis secara sistematis
+  Fenomena yang diamati             : Jutaan ulasan pengguna aplikasi mobile banking Indonesia tersedia di Google Play Store, namun sebagian besar tidak dianalisis secara sistematis
   Gejala (symptom) yang terukur     : Pengembang memilih algoritma analisis sentimen secara ad-hoc tanpa panduan berbasis bukti untuk konteks teks Bahasa Indonesia pada domain perbankan
   Masalah yang didiagnosis          : Mayoritas studi analisis sentimen menggunakan dataset berbahasa Inggris; studi pada bahasa Indonesia tidak secara konsisten membandingkan NB dan SVM dengan metrik yang lengkap (F1, Precision, Recall)
   Masalah riset (researchable)      : Belum ada studi komparatif yang secara empiris membandingkan Naive Bayes dan SVM menggunakan TF-IDF pada ulasan mobile banking berbahasa Indonesia di Google Play Store dengan metrik evaluasi lengkap
@@ -107,7 +107,7 @@ Pilih satu topik di bidang TI yang diminati. Transformasikan melalui 5 tahap Pro
 | Tahap | Hasil |
 |-------|-------|
 | Reality | Jutaan pengguna aplikasi mobile banking Indonesia (BCA Mobile, Mandiri Online, BRImo) secara aktif memberikan ulasan di Google Play Store yang berisi keluhan, pujian, dan saran terhadap fitur dan layanan aplikasi |
-| Observed Issue (Symptom) | Studi Andrian et al. (2022) menunjukkan bahwa analisis sentimen pada ulasan digital banking Indonesia masih menghasilkan akurasi yang bervariasi antar metode, namun tidak semua studi melaporkan F1-Score sebagai metrik utama — menyulitkan perbandingan yang adil |
+| Observed Issue (Symptom) | Studi Andrian et al. (2022) menunjukkan bahwa analisis sentimen pada ulasan digital banking Indonesia masih menghasilkan akurasi yang bervariasi antar metode, namun tidak semua studi melaporkan F1-Score sebagai metrik utama — menyulitkan perbandingan yang adil antar algoritma |
 | Diagnosed Problem (Root Cause) | Tidak ada konsensus tentang algoritma klasifikasi sentimen terbaik untuk teks ulasan berbahasa Indonesia pada domain mobile banking — setiap studi menggunakan dataset, metrik, dan preprocessing yang berbeda sehingga hasil tidak bisa langsung dibandingkan |
 | Researchable Problem | Belum terdapat studi yang secara sistematis dan dengan kondisi eksperimen yang identik membandingkan Naive Bayes dan SVM menggunakan TF-IDF pada ulasan mobile banking berbahasa Indonesia di Google Play Store |
 | Measurable Variable | IV: jenis algoritma (NB vs SVM). DV: F1-Score macro-average (primary), Akurasi, Precision, Recall (secondary). CV: representasi TF-IDF, split 80:20, preprocessing identik |

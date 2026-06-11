@@ -67,7 +67,7 @@ Jika rantai ini tidak lengkap, RQ belum mature. Bi-directional: RQ yang tidak bi
 ```
 RQ-CONTRIBUTION-HYPOTHESIS
 
-Gap Statement  : Mayoritas studi analisis sentimen ulasan aplikasi mobile banking Indonesia hanya menggunakan satu algoritma tanpa pembanding yang terkontrol, atau melakukan perbandingan pada domain lain seperti e-commerce dan media sosial. Belum terdapat studi yang secara sistematis membandingkan Naive Bayes dan SVM menggunakan TF-IDF dengan kondisi eksperimen identik pada dataset multi-bank (BCA Mobile, Mandiri Online, BRImo) dari Google Play Store, sekaligus membuktikan signifikansi perbedaannya secara statistik.
+Gap Statement  : Mayoritas studi analisis sentimen ulasan aplikasi mobile banking Indonesia hanya menggunakan satu algoritma tanpa pembanding terkontrol (Samudera et al., 2024; Al Hakim & Irwiensyah, 2024), atau melakukan perbandingan pada domain lain seperti Twitter dan e-commerce (Ningsih et al., 2024; Khaira et al., 2023). Belum terdapat studi yang secara sistematis membandingkan Naive Bayes dan SVM menggunakan TF-IDF dengan kondisi eksperimen identik pada dataset multi-bank (BCA Mobile, Mandiri Online, BRImo) dari Google Play Store, sekaligus membuktikan signifikansi perbedaannya secara statistik.
 
 Research Question:
   Tipe         : [✅] Comparison  [ ] Improvement  [ ] Exploratory
@@ -163,6 +163,6 @@ Lengkapi rantai dari RQ hingga metode analisis.
 
 > Ambil satu judul skripsi/paper yang pernah dibaca. Coba ekstrak RQ-nya. Apakah RQ tersebut memenuhi semua komponen (metode, metrik, baseline, konteks)? Jika tidak, apa yang hilang?
 
-**Judul:** Sentiment Analysis of Mobile Banking Reviews Using Machine Learning Models (Santoso et al., 2025)
-**RQ yang diekstrak:** "Algoritma machine learning mana yang menghasilkan akurasi terbaik untuk klasifikasi sentimen ulasan aplikasi mobile banking Indonesia?"
-**Komponen yang hilang:** Tiga komponen tidak terpenuhi secara eksplisit di RQ paper tersebut. Pertama, metrik tidak spesifik — "akurasi terbaik" tidak menyebut apakah menggunakan akurasi biasa atau F1-Score, padahal keduanya bisa menghasilkan kesimpulan berbeda pada data tidak seimbang. Kedua, baseline tidak didefinisikan — tidak jelas algoritma mana yang dijadikan pembanding acuan. Ketiga, dataset tidak disebutkan di RQ — nama aplikasi dan sumber data baru muncul di bagian metodologi, bukan di rumusan pertanyaan riset. Akibatnya RQ terkesan umum dan tidak mengandung cetak biru eksperimen yang lengkap.
+**Judul:** Analisis Sentimen Terhadap Ulasan Pengguna Pada Aplikasi BCA Mobile Menggunakan Metode Naïve Bayes (Al Hakim & Irwiensyah, 2024)
+**RQ yang diekstrak:** "Bagaimana hasil analisis sentimen ulasan pengguna aplikasi BCA Mobile menggunakan metode Naive Bayes?"
+**Komponen yang hilang:** Tiga komponen tidak terpenuhi. Pertama, metrik tidak spesifik — "hasil analisis" tidak menyebut metrik utama (akurasi, F1-Score, atau keduanya). Kedua, baseline tidak ada — tidak disebutkan algoritma pembanding sehingga tidak bisa diketahui apakah NB baik atau buruk relatif terhadap metode lain. Ketiga, dataset tidak eksplisit di RQ — jumlah ulasan dan periode pengumpulan baru muncul di metodologi. Akibatnya RQ hanya mendeskripsikan aktivitas, bukan mengajukan pertanyaan yang membutuhkan perbandingan empiris.

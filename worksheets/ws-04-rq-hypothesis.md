@@ -151,7 +151,7 @@ Lengkapi rantai dari RQ hingga metode analisis.
 | Variable (IV) | Jenis algoritma klasifikasi: Multinomial Naive Bayes vs SVM (SVC kernel linear) — dimanipulasi dengan mengganti konfigurasi model per eksperimen |
 | Variable (DV) | Performa klasifikasi: F1-Score macro-average sebagai primary metric; Akurasi, Precision, Recall sebagai secondary metric |
 | Metric | F1-Score macro-average (0–1) dihitung via sklearn.metrics; Akurasi, Precision, Recall via sklearn.metrics.classification_report |
-| Data source | Ulasan Google Play Store: BCA Mobile (com.bca), Mandiri Online (com.bankmandiri.mandirionline), BRImo (com.bri.britama) — discraping via google-play-scraper Python, filter bahasa Indonesia, periode 2022–2024, ±2.000 ulasan per aplikasi |
+| Data source | Ulasan Google Play Store: BCA Mobile (com.bca), Mandiri Online (com.bankmandiri.mandirionline), BRImo (id.co.bri.brimo) — discraping via google-play-scraper Python, filter bahasa Indonesia, periode 2022–2024, ±2.000 ulasan per aplikasi |
 | Analysis method | Wilcoxon signed-rank test pada hasil 10 run eksperimen dengan random_state berbeda (0–9); effect size Cohen's d untuk mengukur besaran perbedaan praktis |
 
 **Apakah rantai lengkap?** [✅] Ya / [ ] Tidak

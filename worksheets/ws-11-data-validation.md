@@ -66,30 +66,30 @@ Jika gagal di langkah awal → tidak perlu lanjut.
 DATA VALIDATION CHECKLIST
 
 Completeness:
-  [ ] Semua skenario tercakup
-  [ ] Jumlah run sesuai rencana
-  [ ] Tidak ada file output hilang
-  Missing: ____ dari ____ data points
+  [✅] Semua skenario tercakup — Comparison Study NB vs SVM selesai
+  [✅] Jumlah run sesuai rencana — 10 run dari 10 yang direncanakan
+  [✅] Tidak ada file output hilang — hasil_statistik.csv hasil_perbandingan.csv, grafik_perbandingan.png tersedia
+  Missing: 0 dari 10 data points
 
 Format Consistency:
-  [ ] Semua file format sama (CSV/JSON/...)
-  [ ] Header konsisten
-  [ ] Tipe data konsisten (numerik tetap numerik)
+  [✅] Semua file format sama — CSV untuk semua output tabular
+  [✅] Header konsisten — [Run, F1_NaiveBayes, F1_SVM] di hasil_statistik.csv
+  [✅] Tipe data konsisten — F1-Score bertipe float di semua run
 
 Range & Logic:
-  [ ] Nilai dalam range masuk akal
-  [ ] Tidak ada waktu negatif
-  [ ] Metrik 0–100%, tidak di luar range
-  Anomali ditemukan: ____________________
+  [✅] Nilai dalam range masuk akal — F1-Score NB dan SVM berada di rentang 0–1
+  [✅] Tidak ada nilai negatif
+  [✅] Metrik tidak di luar range 0–1
+  Anomali ditemukan: Tidak ada anomali terdeteksi
 
 Cross-Validation:
-  [ ] Run identik → hasil mendekati
-  [ ] Trend konsisten dengan ekspektasi teori
+  [✅] Run identik → hasil mendekati — rata-rata F1 NB 0,5532 dan SVM 0,5627 konsisten antar run
+  [✅] Trend konsisten dengan ekspektasi teori — SVM konsisten lebih tinggi dari NB di semua 10 run
 
 Keputusan:
-  [ ] Data siap analisis
+  [✅] Data siap analisis
   [ ] Perlu cleaning
-  [ ] Perlu re-run (skenario: ____)
+  [ ] Perlu re-run
 ```
 
 ---
@@ -100,15 +100,13 @@ Verifikasi apakah semua data yang direncanakan sudah terkumpul.
 
 | Skenario | Run Direncanakan | Run Tercatat | Missing | Alasan |
 |----------|-----------------|-------------|---------|--------|
-| *Contoh: BERT, DS-1* | *10* | *10* | *0* | *—* |
-| *LSTM, DS-3* | *10* | *8* | *2* | *OOM pada run 7 & 9* |
-| | | | | |
-| | | | | |
+| NB vs SVM — Comparison Study (seed 0–9) | 10 | 10 | 0 | - |
 
-**Total expected:** ____ | **Total actual:** ____ | **Missing:** ____
+
+**Total expected:** 10| **Total actual:** 10 | **Missing:** 0
 
 **Keputusan untuk data missing:**
-> ___________________________________________________
+> Tidak ada data missing. Seluruh 10 run berhasil dieksekusi secara berurutan dalam satu sesi Google Colab tanpa crash atau interupsi. Hasil setiap run tersimpan otomatis ke hasil_statistik.csv melalui pandas to_csv.
 
 ---
 
@@ -116,27 +114,45 @@ Verifikasi apakah semua data yang direncanakan sudah terkumpul.
 
 Periksa data Anda untuk anomali. Gunakan metode IQR atau z-score.
 
-**Dataset sampel (atau data Anda sendiri):**
+**Dataset hasil 10 run eksperimen (F1-Score NB dan SVM):**
 
-| Run | Accuracy (%) |
-|-----|-------------|
-| 1 | *91.2* |
-| 2 | *90.8* |
-| 3 | *91.5* |
-| 4 | *78.3* |
-| 5 | *91.0* |
+| Run | F1-Score NB | F1-Score SVM |
+|-----|-------------|--------------|
+| 1 | 0,5542 | 0,5601 |
+| 2 | 0,5578 | 0,5691 |
+| 3 | 0,5460 | 0,5541 |
+| 4 | 0,5599 | 0,5595 |
+| 5 | 0,5496 | 0,5617 |
+| 6 | 0,5558 | 0,5648 |
+| 7 | 0,5544 | 0,5666 |
+| 8 | 0,5589 | 0,5671 |
+| 9 | 0,5456 | 0,5643 |
+| 10| 0,5495 | 0,5594 |
 
-**Deteksi outlier:**
-- Q1 = ____ | Q3 = ____ | IQR = ____
-- Batas bawah (Q1 - 1.5×IQR) = ____
-- Batas atas (Q3 + 1.5×IQR) = ____
-- Outlier terdeteksi: ____
+**Deteksi outlier (F1-Score NB) menggunakan IQR:**
+
+- Nilai terurut: 0,5456 / 0,5460 / 0,5495 / 0,5496 / 0,5542 / 0,5544 / 0,5558 / 0,5578 / 0,5589 / 0,5599
+- Q1 = 0,5496 | Q3 = 0,5568 | IQR = 0,0072
+- Batas bawah (Q1 - 1,5×IQR) = 0,5388
+- Batas atas (Q3 + 1,5×IQR) = 0,5676
+- Outlier terdeteksi: Tidak ada — semua nilai dalam rentang 0,5388–0,5676
+
+**Deteksi outlier (F1-Score SVM) menggunakan IQR:**
+
+- Nilai terurut: 0,5541 / 0,5594 / 0,5595 / 0,5601 / 0,5617 / 0,5643 / 0,5648 / 0,5666 / 0,5671 / 0,5691
+- Q1 = 0,5598 | Q3 = 0,5657 | IQR = 0,0059
+- Batas bawah (Q1 - 1,5×IQR) = 0,5509
+- Batas atas (Q3 + 1,5×IQR) = 0,5746
+- Outlier terdeteksi: Tidak ada — semua nilai dalam rentang 0,5509–0,5746
 
 **Investigasi (untuk setiap outlier):**
 
 | Outlier | Nilai | Kemungkinan Penyebab | Keputusan |
 |---------|-------|---------------------|-----------|
-| *Run 4* | *78.3* | *Contoh: thermal throttling setelah 3 run berturut* | *Re-run dengan cooling interval* |
+| -       |  -    | Tidak ada outlier terdeteksi pada 10 run eksperimen | Data valid, siap analisis |
+
+**Run 4:**
+Pada Run 4 (seed=3), F1-Score NB (0,5599) lebih tinggi dari SVM (0,5595) — satu-satunya run di mana NB mengungguli SVM. Ini bukan anomali statistik karena nilainya masih dalam batas IQR, melainkan variasi natural dari pembagian data pada seed tertentu. Justru ini memperkuat pentingnya 10 run: jika eksperimen berhenti di seed=3 saja, kesimpulannya bisa terbalik.
 
 ---
 
@@ -144,12 +160,12 @@ Periksa data Anda untuk anomali. Gunakan metode IQR atau z-score.
 
 Buat laporan validasi ringkas untuk dataset eksperimen Anda.
 
-**1. Completeness:** ____% data terkumpul
-**2. Format:** [ ] Konsisten / [ ] Ada inkonsistensi: ____
-**3. Range check (anomali):** ____
-**4. Logic check:** [ ] Parameter sesuai plan / [ ] Ada ketidaksesuaian: ____
+**1. Completeness:** 100 % data terkumpul — 10 dari 10 run tercatat di hasil_statistik.csv
+**2. Format:** [✅] Konsisten Konsisten — semua output dalam format CSV dengan header [Run, F1_NaiveBayes, F1_SVM] dan tipe data float yang seragam di semua run 
+**3. Range check (anomali):** Tidak ada anomali — seluruh nilai F1-Score NB (0,5456–0,5599) dan SVM (0,5541–0,5691) berada dalam rentang valid 0–1 dan tidak ada outlier berdasarkan deteksi IQR
+**4. Logic check:** [✅] Parameter sesuai plan — NB alpha=1.0, SVM kernel=linear C=1.0, TF-IDF max_features=5000, split test_size=0.2 stratify=y, random_state=0–9 untuk split dan random_state=42 untuk SVC semuanya konsisten dengan yang didokumentasikan di WS-09 dan WS-10 
 
-**Kesimpulan:** [ ] Data siap analisis / [ ] Perlu tindakan: ____
+**Kesimpulan:** [✅] Data siap analisis — tidak ada missing data, tidak ada anomali, format konsisten, parameter sesuai rencana eksperimen. SVM mengungguli NB di 9 dari 10 run dengan rata-rata F1 SVM 0,5627 vs NB 0,5532. Dataset hasil_statistik.csv siap digunakan untuk uji statistik Wilcoxon signed-rank test (p=0,0039) dan effect size Cohen's d (2,0479) di tahap analisis berikutnya. 
 
 ---
 
@@ -157,5 +173,6 @@ Buat laporan validasi ringkas untuk dataset eksperimen Anda.
 
 > Apa perbedaan antara "data yang benar" dan "data yang dipercaya"? Mengapa proses validasi formal diperlukan meskipun data dikumpulkan secara otomatis?
 
-> ___________________________________________________
-> ___________________________________________________
+> "Data yang benar" berarti nilai yang tercatat secara teknis akurat — tidak ada error komputasi, tidak ada nilai di luar range, dan format sesuai. Sementara "data yang dipercaya" memiliki standar yang lebih tinggi: data tidak hanya benar secara teknis, tetapi juga terbukti konsisten, lengkap, bebas anomali, dan sesuai dengan desain eksperimen yang direncanakan sejak awal.
+
+> Dalam penelitian ini, hasil_statistik.csv dihasilkan secara otomatis oleh pandas to_csv di Cell 16 — artinya tidak ada risiko human error dalam pencatatan. Namun logging otomatis tidak menjamin data benar: bug di dalam loop seperti TF-IDF yang di-fit ulang pada seluruh dataset alih-alih hanya training set bisa menghasilkan angka yang tampak normal tetapi sebenarnya tidak valid karena terjadi data leakage. Proses validasi formal seperti range check, completeness check, dan logic check diperlukan justru untuk mendeteksi kasus-kasus seperti ini — memastikan bahwa angka yang tersimpan benar-benar mencerminkan kondisi eksperimen yang dirancang, bukan artefak dari bug yang tidak terdeteksi.

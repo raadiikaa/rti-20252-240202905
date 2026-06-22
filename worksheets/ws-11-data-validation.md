@@ -84,7 +84,7 @@ Range & Logic:
 
 Cross-Validation:
   [✅] Run identik → hasil mendekati — rata-rata F1 NB 0,5532 dan SVM 0,5627 konsisten antar run
-  [✅] Trend konsisten dengan ekspektasi teori — SVM konsisten lebih tinggi dari NB di semua 10 run
+  [✅] Trend konsisten dengan ekspektasi teori — SVM konsisten lebih tinggi dari NB di 9 dari 10 run
 
 Keputusan:
   [✅] Data siap analisis
@@ -161,7 +161,7 @@ Pada Run 4 (seed=3), F1-Score NB (0,5599) lebih tinggi dari SVM (0,5595) — sat
 Buat laporan validasi ringkas untuk dataset eksperimen Anda.
 
 **1. Completeness:** 100 % data terkumpul — 10 dari 10 run tercatat di hasil_statistik.csv
-**2. Format:** [✅] Konsisten Konsisten — semua output dalam format CSV dengan header [Run, F1_NaiveBayes, F1_SVM] dan tipe data float yang seragam di semua run 
+**2. Format:** [✅] Konsisten — semua output dalam format CSV dengan header [Run, F1_NaiveBayes, F1_SVM] dan tipe data float yang seragam di semua run 
 **3. Range check (anomali):** Tidak ada anomali — seluruh nilai F1-Score NB (0,5456–0,5599) dan SVM (0,5541–0,5691) berada dalam rentang valid 0–1 dan tidak ada outlier berdasarkan deteksi IQR
 **4. Logic check:** [✅] Parameter sesuai plan — NB alpha=1.0, SVM kernel=linear C=1.0, TF-IDF max_features=5000, split test_size=0.2 stratify=y, random_state=0–9 untuk split dan random_state=42 untuk SVC semuanya konsisten dengan yang didokumentasikan di WS-09 dan WS-10 
 

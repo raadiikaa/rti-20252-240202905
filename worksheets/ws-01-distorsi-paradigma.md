@@ -36,10 +36,6 @@ Mata kuliah ini menggunakan pendekatan **Positivist** (fenomena TI bisa diukur o
 
 Dalam DSR, artefak **bukan tujuan akhir** — ia adalah instrumen untuk menghasilkan pengetahuan. Pertanyaan riset tetap harus difalsifikasi.
 
-### Mode Berpikir Peneliti
-
-**Curious** (mempertanyakan fenomena) → **Critical** (mengevaluasi klaim berdasarkan bukti) → **Systematic** (merancang investigasi terstruktur dan reproducible).
-
 ### Research vs Engineering
 
 | Aspek | Engineering | Research |
@@ -61,25 +57,26 @@ Dalam DSR, artefak **bukan tujuan akhir** — ia adalah instrumen untuk menghasi
 ## Template A.1 — Research Mindset Self-Assessment
 
 ```
-Nama Peneliti    : ____________________
-Tanggal          : ____________________
+Nama Peneliti    : Radika Rismawati Tri Prasaja
+Tanggal          : Minggu, 12 April 2026
 
 1. Ketika membaca klaim "metode X 95% akurat":
-   - Pertanyaan pertama saya: ____________________
-   - Data yang dibutuhkan untuk verifikasi: ____________________
+   - Pertanyaan pertama saya: 95% akurat diukur pada dataset seperti apa? Apakah dataset tersebut seimbang antar kelas sentimennya?
+   - Data yang dibutuhkan untuk verifikasi: Ukuran dan komposisi dataset uji, distribusi kelas (positif/negatif/netral), metode validasi yang digunakan, dan apakah metrik lain seperti F1-Score juga dilaporkan.
+
 
 2. Posisi paradigma:
-   - Pendekatan: [ ] Positivis  [ ] Interpretivis  [ ] Design Science  [ ] Mixed
-   - Alasan: ____________________
+   - Pendekatan: [ ] Positivis  [ ] Interpretivis  [✅] Design Science  [ ] Mixed
+   - Alasan: Penelitian ini membangun pipeline klasifikasi sentimen sebagai artefak yang digunakan untuk menguji hipotesis — apakah SVM lebih unggul dari Naive Bayes pada teks ulasan mobile banking berbahasa Indonesia.
 
 3. Identifikasi distorsi:
-   - Asumsi tersembunyi: ____________________
-   - Sumber bias potensial: ____________________
-   - Langkah mitigasi: ____________________
+   - Asumsi tersembunyi: Rating bintang pengguna secara akurat merepresentasikan sentimen teks ulasan yang ditulis
+   - Sumber bias potensial: Ulasan dengan rating tinggi belum tentu berteks positif; peneliti mungkin memilih metrik yang menguntungkan algoritmanya
+   - Langkah mitigasi: Lakukan validasi subsampel manual, laporkan semua metrik (F1, Precision, Recall), dan gunakan dataset yang sama untuk kedua algoritma
 
 4. Komitmen etika:
-   - Data yang tidak akan dimanipulasi: ____________________
-   - Batasan yang diakui sejak awal: ____________________
+   - Data yang tidak akan dimanipulasi: Hasil klasifikasi mentah dari kedua algoritma — tidak akan dipilih selektif hanya yang menguntungkan SVM
+   - Batasan yang diakui sejak awal: Hasil hanya berlaku untuk ulasan mobile banking Indonesia di Google Play; generalisasi ke platform atau domain lain membutuhkan replikasi tambahan
 ```
 
 ---
@@ -88,28 +85,25 @@ Tanggal          : ____________________
 
 Pilih satu paper riset di bidang TI yang mengklaim "metode X meningkatkan performa." Telusuri setiap tahap Research Trust Model.
 
-> **Panduan pencarian paper:** Gunakan [IEEE Xplore](https://ieeexplore.ieee.org), [ACM Digital Library](https://dl.acm.org), atau Google Scholar. Pilih paper **tahun 2020 ke atas**, di topik yang Anda minati: deteksi anomali, klasifikasi citra, NLP, keamanan siber, IoT, dsb.
->
-> **Contoh domain TI:** "Deteksi anomali lalu-lintas jaringan menggunakan CNN — akurasi meningkat 94% vs baseline SVM 87%." Distorsi potensial: apakah dataset normal/anomali seimbang? Apakah hanya diuji pada satu vendor traffic?
-
 **Paper yang dipilih:**
-> Judul: _______________________________________________
-> Penulis (Tahun): ______________________________________
-> Sumber/Link DOI: _____________________________________
+> Judul: Analisis Sentimen Ulasan Aplikasi Perbankan di Google Play Store menggunakan Algoritma Support Vector Machine
+> Penulis (Tahun): Prasetyo, M. J., & Agastya, I. M. A. (2024)
+Jurnal: Sistemasi: Jurnal Sistem Informasi, Vol. 13, No. 6, 2024: 2386–2400
+Link: https://sistemasi.ftik.unisi.ac.id/index.php/stmsi/article/view/4536
 
 | Tahap | Apa yang Dilakukan | Potensi Distorsi |
 |-------|-------------------|-----------------|
-| Reality → Data | *Contoh: Kumpulkan log server 30 hari* | *Contoh: Hanya ambil jam sibuk* |
-| Data → Processing | | |
-| Processing → Analysis | | |
-| Analysis → Inference | | |
-| Inference → Knowledge | | |
+| Reality → Data | Mengumpulkan ulasan aplikasi perbankan dari Google Play Store dan melabeli sentimen berdasarkan rating bintang | Dataset hanya dari periode dan aplikasi tertentu — tidak merepresentasikan keseluruhan pengguna mobile banking Indonesia yang lebih beragam |
+| Data → Processing | Preprocessing teks: case folding, tokenisasi, stopword removal, stemming, lalu representasi fitur menggunakan TF-IDF |Rating bintang digunakan sebagai proxy label sentimen tanpa validasi manual — ulasan bintang 1 bisa berisi keluhan teknis sementara yang bersifat netral, bukan sentimen negatif permanen |
+| Processing → Analysis | Mengklasifikasikan sentimen menggunakan algoritma SVM dan mengevaluasi dengan akurasi, precision, recall, F1-score | Tidak dilaporkan secara eksplisit apakah distribusi kelas seimbang — jika kelas positif sangat dominan, akurasi tinggi bisa menyesatkan |
+| Analysis → Inference | Menyimpulkan SVM efektif untuk klasifikasi sentimen ulasan aplikasi perbankan di Google Play Store | Kesimpulan belum disertai uji statistik signifikansi — perbedaan performa antara kondisi berbeda hanya dibandingkan secara deskriptif tanpa p-value atau effect size |
+| Inference → Knowledge | Mengklaim SVM dapat digunakan untuk analisis sentimen ulasan banking Indonesia | Klaim terlalu luas: hasil hanya dari satu studi dengan kondisi spesifik, belum dibandingkan secara terkontrol dengan algoritma lain pada dataset yang identik |
 
-**Distorsi paling besar di tahap:** ________________________
+**Distorsi paling besar di tahap:** Processing → Analysis
 
 **Dua distorsi spesifik yang teridentifikasi:**
-1. ___________________________________________________
-2. ___________________________________________________
+1. Proxy labeling tanpa validasi — Label sentimen ditentukan langsung dari rating bintang tanpa pengecekan manual. Ini asumsi yang rawan salah karena pengguna sering memberi rating rendah karena masalah teknis sementara teksnya netral, atau sebaliknya memberi rating tinggi sambil menyisipkan keluhan.
+2. Tidak ada uji statistik — Perbandingan performa hanya dilakukan secara deskriptif dengan membandingkan angka akurasi. Tanpa uji statistik (seperti Wilcoxon atau t-test) dan effect size, tidak bisa dipastikan apakah perbedaan yang dilaporkan signifikan secara statistik atau hanya variasi acak.
 
 ---
 
@@ -119,29 +113,27 @@ Skenario: Seorang peneliti menemukan bahwa jika 3 data point outlier dihapus, ha
 
 | Perspektif | Analisis |
 |------------|---------|
-| Kejujuran ilmiah | *Contoh: Laporkan kedua versi (dengan dan tanpa outlier)* |
-| Transparansi | |
-| Peer review | |
+| Kejujuran ilmiah | Peneliti wajib melaporkan kedua versi hasil — dengan outlier dan tanpa outlier. Menghapus outlier hanya karena hasilnya jadi bagus tanpa alasan metodologis yang jelas = manipulasi data |
+| Transparansi | Jika outlier memang dihapus, harus dijelaskan alasan teknisnya secara terbuka di paper (misalnya: error alat ukur, kondisi tidak normal yang terdokumentasi). Menyembunyikan proses ini melanggar prinsip open science |
+| Peer review | Reviewer berhak meminta justifikasi penghapusan outlier. Jika tidak dijelaskan dengan baik, paper bisa ditolak atau diretract setelah publikasi karena dianggap tidak jujur |
 
 **Keputusan akhir dan justifikasi:**
-> ___________________________________________________
+> Outlier tidak boleh dihapus hanya demi mendapatkan hasil yang signifikan. Keputusan yang etis adalah melaporkan hasil apa adanya: "Dengan data lengkap, hasil tidak signifikan (p > 0.05). Analisis sensitivitas menunjukkan penghapusan 3 outlier mengubah hasil menjadi signifikan, namun keputusan ini harus disertai justifikasi metodologis yang kuat." Ini adalah bentuk penelitian yang jujur dan dapat dipertanggungjawabkan. Menghapus outlier tanpa alasan jelas termasuk pelanggaran etika riset yang disebut data manipulation.
 
 ---
 
 ## Latihan 3 — Posisi Paradigma
 
-**Topik riset:** ________________________________________
-
-> **Skala 1–5:** 1 = tidak sesuai sama sekali dengan topik ini, 5 = sangat sesuai dan dominan digunakan pada riset bertopik serupa.
+**Topik riset:** Perbandingan algoritma Naive Bayes dan SVM untuk klasifikasi sentimen ulasan aplikasi mobile banking Indonesia di Google Play Store
 
 | Kriteria | Positivis | Interpretivis | Design Science |
 |----------|-----------|---------------|----------------|
-| Kesesuaian dengan topik (1–5) | *Contoh: 4 — topik kuantitatif, cocok uji hipotesis* | *Contoh: 2 — topik tidak studi makna/konteks* | *Contoh: 5 — membangun artefak untuk uji klaim* |
-| Jenis data yang dikumpulkan | *Metrik numerik, log eksperimen* | *Wawancara, observasi kualitatif* | *Hasil uji artefak, komparasi kinerja* |
-| Limitasi paradigma | | | |
+| Kesesuaian dengan topik (1–5) | 4 | 2 | 5 |
+| Jenis data yang dikumpulkan | Data terukur: akurasi, F1-Score, Precision, Recall dari dua algoritma pada dataset yang sama | Wawancara mendalam tentang pengalaman pengguna memberi ulasan di Google Play | Membangun pipeline klasifikasi sentimen sebagai artefak, lalu menguji performa NB vs SVM |
+| Limitasi paradigma | Tidak menangkap nuansa bahasa informal Indonesia yang membuat teks sulit diklasifikasikan secara objektif | Sulit direplikasi dan tidak menghasilkan perbandingan algoritma yang terukur | Sedikit lebih kompleks karena melibatkan pembangunan artefak, tapi justru sesuai karena pipeline adalah instrumen uji |
 
-**Paradigma yang dipilih:** _____________________________
-**Alasan:** ____________________________________________
+**Paradigma yang dipilih:** Design Science
+**Alasan:** Penelitian ini secara eksplisit membangun pipeline klasifikasi sentimen sebagai artefak — bukan hanya mengamati fenomena, melainkan merancang sistem yang dapat diuji. Artefak ini (pipeline NB vs SVM) berfungsi sebagai instrumen pengujian hipotesis: apakah SVM menghasilkan F1-Score lebih tinggi dari NB pada dataset ulasan mobile banking Indonesia. Ini sesuai dengan definisi Design Science Research di mana artefak dibuat untuk membuktikan klaim, bukan sebagai tujuan akhir.
 
 ---
 
@@ -150,5 +142,5 @@ Skenario: Seorang peneliti menemukan bahwa jika 3 data point outlier dihapus, ha
 > Sebelum membaca materi ini, apakah pernah mempertanyakan klaim "95% akurat"? Setelah memahami rantai distorsi, pertanyaan apa yang sekarang akan diajukan saat membaca paper?
 
 **Jawaban:**
-> ___________________________________________________
-> ___________________________________________________
+> Sebelum membaca materi ini, klaim "akurasi 91%" pada paper analisis sentimen langsung diterima sebagai bukti bahwa metode tersebut bagus. Angka besar terasa cukup meyakinkan.
+> Setelah memahami rantai distorsi dari Reality hingga Knowledge, pertanyaan yang sekarang akan diajukan saat membaca paper analisis sentimen adalah: Bagaimana label sentimen ditentukan — otomatis dari rating atau manual oleh anotator? Apakah dataset seimbang antar kelas positif, negatif, dan netral? Apakah F1-Score per kelas dilaporkan atau hanya akurasi keseluruhan? Dan apakah kedua algoritma yang dibandingkan diuji pada partisi data yang benar-benar identik?

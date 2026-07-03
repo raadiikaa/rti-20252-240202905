@@ -165,7 +165,7 @@ Buat laporan validasi ringkas untuk dataset eksperimen Anda.
 **3. Range check (anomali):** Tidak ada anomali — seluruh nilai F1-Score NB (0,5456–0,5599) dan SVM (0,5541–0,5691) berada dalam rentang valid 0–1 dan tidak ada outlier berdasarkan deteksi IQR
 **4. Logic check:** [✅] Parameter sesuai plan — NB alpha=1.0, SVM kernel=linear C=1.0, TF-IDF max_features=5000, split test_size=0.2 stratify=y, random_state=0–9 untuk split dan random_state=42 untuk SVC semuanya konsisten dengan yang didokumentasikan di WS-09 dan WS-10 
 
-**Kesimpulan:** [✅] Data siap analisis — tidak ada missing data, tidak ada anomali, format konsisten, parameter sesuai rencana eksperimen. SVM mengungguli NB di 9 dari 10 run dengan rata-rata F1 SVM 0,5627 vs NB 0,5532. Dataset hasil_statistik.csv siap digunakan untuk uji statistik Wilcoxon signed-rank test (p=0,0039) dan effect size Cohen's d (2,0479) di tahap analisis berikutnya. 
+**Kesimpulan:** [✅] Data siap analisis — tidak ada missing data, tidak ada anomali, format konsisten, parameter sesuai rencana eksperimen. SVM mengungguli NB di 9 dari 10 run dengan rata-rata F1 SVM 0,5627 vs NB 0,5532. Dataset hasil_statistik.csv siap digunakan untuk uji statistik Wilcoxon signed-rank test (p=0,0039) dan effect size Cohen's d (1,9428) di tahap analisis berikutnya. 
 
 ---
 

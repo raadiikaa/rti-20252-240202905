@@ -249,7 +249,7 @@ Tulis README minimum untuk eksperimen Anda (6 komponen wajib).
     Akurasi NB    : 0,8385
     Akurasi SVM   : 0,8455
     p-value       : 0,0039 (H₀ ditolak, SVM lebih baik)
-    Cohen's d     : 2,0479 (effect size besar)
+    Cohen's d     : 1,9428 (effect size besar)
 
 ```
 

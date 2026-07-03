@@ -74,8 +74,8 @@ Metrik Utama      : F1-Score macro-average (primary), Akurasi (secondary)
 Tabel Hasil:
 | Algoritma   | F1-Score macro (mean ± std) | Akurasi* | n  |
 |-------------|-----------------------------|----------|----|
-| SVM         | 0,5627 ± 0,0039             | 0,8455   | 10 |
-| Naive Bayes | 0,5532 ± 0,0057             | 0,8385   | 10 |
+| SVM         | 0,5627 ± 0,0045             | 0,8455   | 10 |
+| Naive Bayes | 0,5532 ± 0,0052             | 0,8385   | 10 |
 
 *Akurasi dari run tunggal random_state=42 — tidak dicatat per 10 run
 
@@ -99,17 +99,17 @@ Bias Check:
 Perhitungan std F1-Score dari 10 run:
 
 NB: 0,5542 / 0,5578 / 0,5460 / 0,5599 / 0,5496 / 0,5558 / 0,5544 / 0,5589 / 0,5456 / 0,5495
-Mean = 0,5532 | Std = 0,0057
+Mean = 0,5532 | Std = 0,0052
 
 SVM: 0,5601 / 0,5691 / 0,5541 / 0,5595 / 0,5617 / 0,5648 / 0,5666 / 0,5671 / 0,5643 / 0,5594
-Mean = 0,5627 | Std = 0,0039
+Mean = 0,5627 | Std = 0,0045
 
 **Tabel Perbandingan Hasil Eksperimen NB vs SVM (10 Run):**
 
 | Algoritma | F1-Score macro (mean ± std) | Akurasi | n |
 |-----------|-----------------------------|---------|---|
-| SVM | 0,5627 ± 0,0039 | 0,8455 | 10 |
-| Naive Bayes | 0,5532 ± 0,0057 | 0,8385 | 10 |
+| SVM | 0,5627 ± 0,0045 | 0,8455 | 10 |
+| Naive Bayes | 0,5532 ± 0,0052 | 0,8385 | 10 |
 
 *Akurasi dari run tunggal random_state=42 — tidak dicatat per 10 run. Diurutkan berdasarkan F1-Score (metrik utama) dari tertinggi ke terendah N=10 run per algoritma dengan random_state=0–9 pada train_test_split
 
@@ -128,7 +128,7 @@ Rencanakan 2-3 grafik untuk menyajikan data dari Latihan 1. Setiap grafik = satu
 | # | Jenis Grafik | Pesan | Data yang Digunakan |
 |---|--------------|-------|---------------------|
 | 1 | Bar chart grouped (sudah dibuat di Cell 14 → grafik_perbandingan.png) | SVM unggul dari NB baik di F1-Score maupun Akurasi pada run tunggal | F1-Score NB=0,5466, SVM=0,5553; Akurasi NB=0,8385, SVM=0,8455 |
-| 2 | Box plot | Distribusi F1-Score NB vs SVM dari 10 run menunjukkan SVM konsisten lebih tinggi dengan variabilitas lebih rendah | F1-Score 10 run NB (mean=0,5532, std=0,0057) dan SVM (mean=0,5627, std=0,0039) |
+| 2 | Box plot | Distribusi F1-Score NB vs SVM dari 10 run menunjukkan SVM konsisten lebih tinggi dengan variabilitas lebih rendah | F1-Score 10 run NB (mean=0,5532, std=0,0052) dan SVM (mean=0,5627, std=0,0045) |
 
 **Justifikasi pemilihan grafik:**
 
@@ -166,6 +166,6 @@ Bar chart di Cell 14 belum menyertakan error bar karena hanya menggunakan nilai 
 
 > Mengapa tabel dan grafik keduanya diperlukan — tidak cukup salah satu saja? Pernahkah Anda membuat grafik yang (tanpa sengaja) menyesatkan?
 
-> Tabel dan grafik melayani fungsi yang berbeda dan saling melengkapi. Tabel memberikan presisi numerik yang self-contained — pembaca bisa membaca angka F1-Score NB 0,5532 ± 0,0057 dan SVM 0,5627 ± 0,0039 secara eksak, membandingkan, dan memverifikasi sendiri. Grafik sebaliknya memberikan pola visual yang tidak bisa ditangkap dari angka saja — box plot dari 10 run langsung memperlihatkan bahwa distribusi SVM lebih tinggi dan lebih sempit dari NB tanpa perlu menghitung. Jika hanya ada tabel, pembaca harus membayangkan distribusinya. Jika hanya ada grafik, pembaca tidak bisa mengutip angka presisi untuk perbandingan atau replikasi. Keduanya wajib ada karena menjawab pertanyaan yang berbeda: tabel menjawab "berapa tepatnya?" dan grafik menjawab "bagaimana polanya?".
+> Tabel dan grafik melayani fungsi yang berbeda dan saling melengkapi. Tabel memberikan presisi numerik yang self-contained — pembaca bisa membaca angka F1-Score NB 0,5532 ± 0,0052 dan SVM 0,5627 ± 0,0045 secara eksak, membandingkan, dan memverifikasi sendiri. Grafik sebaliknya memberikan pola visual yang tidak bisa ditangkap dari angka saja — box plot dari 10 run langsung memperlihatkan bahwa distribusi SVM lebih tinggi dan lebih sempit dari NB tanpa perlu menghitung. Jika hanya ada tabel, pembaca harus membayangkan distribusinya. Jika hanya ada grafik, pembaca tidak bisa mengutip angka presisi untuk perbandingan atau replikasi. Keduanya wajib ada karena menjawab pertanyaan yang berbeda: tabel menjawab "berapa tepatnya?" dan grafik menjawab "bagaimana polanya?".
 
 > Dalam penelitian ini, bar chart di Cell 14 dibuat tanpa error bar karena hanya menggunakan nilai run tunggal. Tanpa error bar, pembaca tidak bisa menilai apakah perbedaan F1-Score antara NB dan SVM stabil atau hanya kebetulan dari satu pembagian data. Ini adalah contoh grafik yang secara tidak sengaja menyesatkan — secara teknis benar (angkanya akurat) tapi menyembunyikan ketidakpastian yang penting. Box plot dari 10 run melengkapi kekurangan ini dengan menampilkan variabilitas secara eksplisit.

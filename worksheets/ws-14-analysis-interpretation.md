@@ -80,32 +80,33 @@ ANALYSIS & INTERPRETATION
 1. Statistik Deskriptif:
    | Skenario | Mean | Std | Median | Min | Max | n |
    |----------|------|-----|--------|-----|-----|---|
-   |          |      |     |        |     |     |   |
+   | Naive Bayes  | 0,5532 | 0,0052 | 0,5541 | 0,5456 | 0,5599 | 10 |
+   | SVM          | 0,5627 | 0,0045 | 0,5624 | 0,5541 | 0,5691 | 10 |
 
 2. Uji Hipotesis:
-   Uji yang digunakan  : ____________________
-   Justifikasi          : ____________________
-   Hasil: p = ____, effect size (d/r/η²) = ____
-   CI 95%               : [____, ____]
+   Uji yang digunakan  : Wilcoxon signed-rank test (paired,     non-parametrik)
+   Justifikasi          : Data berpasangan (NB dan SVM diuji pada   partisi data identik di tiap run) dengan n=10 kecil — Wilcoxon dipili sebelum eksperimen (pre-registration) karena tidak mengasumsikan distribusi normal, cocok untuk ukuran sampel kecil
+   Hasil: p = 0,0039, effect size (Cohen's d) = 1,9428
+   CI 95% selisih F1 (SVM−NB) : [0,0060 ; 0,0130]  *(dihitung post-hoc dari 10 run, paired t-based CI — bukan digunakan untuk mengubah keputusan hipotesis, hanya melengkapi interpretasi)
 
 3. Keputusan:
-   [ ] H₀ ditolak → H₁ diterima
+   [✅] H₀ ditolak → H₁ diterima (p = 0,0039 < α = 0,05)
    [ ] H₀ tidak ditolak
 
 4. Interpretasi:
-   Hubungan ke RQ       : ____________________
-   Practical significance: ____________________
-   Perbandingan literatur: ____________________
+   Hubungan ke RQ       : RQ bertanya apakah SVM menghasilkan F1-Score lebih tinggi dari NB — hasil membuktikan SVM unggul secara statistik dan praktis (large effect)
+   Practical significance: Cohen's d = 1,9428 jauh di atas ambang large effect (>0,8) — selisih F1 rata-rata 0,0095 konsisten di 9 dari 10 run, bukan kebetulan partisi data
+   Perbandingan literatur: Konsisten dengan Edwina & Mauritsius (2024) dan Andrian et al. (2022) yang juga menemukan SVM unggul dari NB pada teks berbahasa Indonesia
 
 5. Limitation:
    | Jenis | Ancaman | Dampak | Mitigasi |
    |-------|---------|--------|----------|
-   |       |         |        |          |
+   | Construct validity | Rating bintang sebagai proxy label sentimen | Ulasan 1★ karena bug teknis bisa dilabel "negatif" padahal netral | Diakui eksplisit; disarankan validasi manual subsampel di penelitian lanjutan |
+   | Statistical limitation | n=10 run — ukuran sampel kecil untuk uji statistik | Power test terbatas meski hasil signifikan | CI 95% dilaporkan untuk transparansi rentang ketidakpastian |
+   | Internal validity | Tidak ada langkah dedup — potensi ulasan template terhitung ganda | Bisa sedikit memengaruhi distribusi kelas | Diakui sebagai limitasi pipeline (lihat WS-13) |
+   | External validity | Hanya 3 bank konvensional, periode 2022–2024 | Tidak otomatis berlaku untuk bank syariah/digital | Dinyatakan eksplisit sebagai batas generalisasi di Simpulan |
 
-6. Failure Analysis (jika H₀ tidak ditolak):
-   Penyebab potensial  : ____________________
-   Boundary condition   : ____________________
-   Insight              : ____________________
+6. Failure Analysis (H₀ ditolak, TIDAK berlaku — dicantumkan untuk   kelengkapan): Karena H₀ berhasil ditolak dengan p dan effect size yang solid, tidak ada "failure" pada level hipotesis utama. Namun catatan penting: F1-Score kelas netral pada classification_report kedua algoritma tercatat 0,00 — ini adalah bentuk failure parsial yang layak dianalisis di bawah.
 ```
 
 ---
@@ -115,15 +116,14 @@ ANALYSIS & INTERPRETATION
 Tentukan uji statistik yang tepat untuk eksperimen Anda.
 
 | Pertanyaan | Jawaban |
-|-----------|---------|
-| Berapa grup yang dibandingkan? | *Contoh: 3 (BERT, LSTM, SVM)* |
-| Apakah data berpasangan (paired)? | |
-| Apakah distribusi normal? (uji normalitas) | |
-| **Uji yang dipilih:** | |
-| **Justifikasi:** | |
+|------------|---------|
+| Berapa grup yang dibandingkan? | 2 (Naive Bayes vs SVM) |
+| Apakah data berpasangan (paired)? | Ya — kedua algoritma diuji pada partisi train-test yang identik di tiap run (random_state sama untuk NB dan SVM dalam 1 run) |
+| Apakah distribusi normal? | Diuji post-hoc dengan Shapiro-Wilk pada selisih (SVM−NB): W=0,943, p=0,588 → tidak signifikan menyimpang dari normal. Namun keputusan uji ditetapkan sebelum melihat data ini |
+| **Uji yang dipilih:** | Wilcoxon signed-rank test |
+| **Justifikasi:** | Ditetapkan sejak WS-04 (pre-registration) sebagai uji non-parametrik yang aman untuk n=10 kecil tanpa asumsi normalitas — meskipun uji normalitas post-hoc menunjukkan data cukup normal, keputusan awal tetap dipertahankan karena mengubah metode analisis setelah melihat data adalah p-hacking (WS-05) |
 
-**Effect size yang akan dilaporkan:** [ ] Cohen's d / [ ] Eta-squared / [ ] Lainnya: ____
-
+**Effect size yang akan dilaporkan:** [✅] Cohen's d 
 ---
 
 ## Latihan 2 — Interpretasi Hasil
@@ -131,20 +131,20 @@ Tentukan uji statistik yang tepat untuk eksperimen Anda.
 Gunakan data berikut (atau data riil Anda) untuk berlatih interpretasi.
 
 **Data:**
-| Model | Accuracy (mean ± std) | n |
-|-------|----------------------|---|
-| A | 89.2 ± 1.5 | 10 |
-| B | 87.8 ± 2.1 | 10 |
+| Algoritma | F1-Score macro (mean ± std) | n |
+|-----------|------------------------------|---|
+| Naive Bayes | 0,5532 ± 0,0052 | 10 |
+| SVM | 0,5627 ± 0,0045 | 10 |
 
-p = 0.045, Cohen's d = 0.74, CI 95% = [0.03, 2.77]
+p = 0,0039, Cohen's d = 1,9428, CI 95% = [0,0060 ; 0,0130]
 
 | Aspek | Interpretasi |
-|-------|-------------|
-| Signifikansi statistik | *Contoh: p < 0.05 → signifikan pada α=0.05* |
-| Effect size | *Contoh: d=0.74 → medium-to-large effect* |
-| Practical significance | |
-| Hubungan ke RQ | |
-| Perbandingan literatur | |
+|-------|--------------|
+| Signifikansi statistik | p = 0,0039 < α = 0,05 → signifikan secara statistik, H₀ ditolak |
+| Effect size | Cohen's d = 1,9428 → large effect (jauh di atas ambang 0,8), lebih dari dua kali lipat ambang "large" |
+| Practical significance | Selisih rata-rata F1 hanya 0,0095 (0,95 poin persentase) — kecil dalam angka absolut, tapi konsisten di 9 dari 10 run dengan variabilitas rendah (std SVM 0,0045 < std NB 0,0052), sehingga meskipun selisih absolut kecil, keandalan/konsistensi keunggulan SVM lah yang membuatnya bermakna praktis |
+| Hubungan ke RQ | Menjawab langsung RQ: SVM terbukti unggul secara statistik maupun praktis untuk klasifikasi sentimen ulasan mobile banking Indonesia menggunakan TF-IDF |
+| Perbandingan literatur | Sejalan dengan Andrian et al. (2022) yang menemukan SVM unggul di data digital banking Indonesia, dan Edwina & Mauritsius (2024) yang menemukan SVM akurasi 91% pada SimobiPlus — namun penelitian ini menjadi yang pertama memverifikasi keunggulan tersebut dengan uji statistik formal pada dataset multi-bank |
 
 ---
 
@@ -152,22 +152,21 @@ p = 0.045, Cohen's d = 0.74, CI 95% = [0.03, 2.77]
 
 Latih kemampuan failure analysis: hipotesis TIDAK didukung. Apa yang bisa dipelajari?
 
-**Skenario:** Metode baru Anda mendapat F1 = 83.2%, baseline = 84.7%. p = 0.12 (tidak signifikan).
+**Skenario:** Hipotesis utama penelitian ini (H₁: SVM > NB) berhasil didukung (p=0,0039, Cohen's d=1,9428). Namun saat classification_report per kelas diperiksa, ditemukan F1-Score kelas netral = 0,00 pada kedua algoritma (NB maupun SVM) — sebuah failure parsial di level sub-kelas yang tidak terlihat dari F1-Score macro-average saja.
 
 | Pertanyaan | Jawaban |
-|-----------|---------|
-| Apakah ini "gagal"? | *Contoh: Bukan gagal total — hipotesis tidak terdukung adalah temuan yang valid dan bisa menjadi kontribusi.* |
-| Kemungkinan penyebab? | *Contoh: Metode baru menambah kompleksitas komputasi (+40% waktu) tanpa peningkatan F1 yang cukup — overhead tidak sebanding.* |
-| Boundary condition? | *Contoh: Metode ini hanya efektif ketika data ≥ 10.000 record; di dataset kecil (<1.000), baseline lebih stabil.* |
-| Insight yang bisa diambil? | *Contoh: Ada trade-off ukuran data vs kompleksitas — rekomendasikan hybrid approach yang adaptif berdasarkan ukuran dataset.* |
-| Apakah layak dilaporkan? Mengapa? | *Contoh: Ya — negative result + boundary condition analysis adalah kontribusi riset yang diakui komunitas (ex: ACL, SIGIR). Mencegah riset duplikasi yang berulang.* |
+|------------|---------|
+| Apakah ini "gagal"? | Bukan gagal pada hipotesis utama (H₁ tetap didukung), tapi merupakan failure parsial pada level per-kelas yang layak dianalisis terpisah |
+| Kemungkinan penyebab? | Kelas netral hanya 276 dari 5.758 data (4,8%) — setelah split 80:20, testing set hanya berisi ±55 sampel netral. Baik NB maupun SVM cenderung memprediksi kelas mayoritas (positif) ketika data sangat timpang, sehingga precision/recall kelas netral mendekati nol |
+| Boundary condition? | Kedua algoritma efektif untuk klasifikasi biner-dominan (positif vs negatif) tapi gagal pada kelas minoritas ekstrem (<5% dari data) tanpa teknik penyeimbangan kelas (oversampling, class_weight) |
+| Insight yang bisa diambil? | Rekomendasi berbasis F1-Score macro-average yang "SVM lebih baik" perlu diberi catatan: keunggulan itu didorong oleh performa pada kelas positif dan negatif, bukan netral. Penelitian lanjutan perlu menerapkan SMOTE atau class_weight='balanced' khusus untuk menangani kelas netral |
+| Apakah layak dilaporkan? Mengapa? | Ya — ini adalah bentuk kejujuran ilmiah (WS-01) dan mencegah pembaca menyimpulkan bahwa SVM "sempurna" di ketiga kelas. Melaporkannya justru memperkuat kredibilitas penelitian dan membuka arah riset lanjutan yang jelas |
 
 **Limitation terkait:**
 | Jenis | Ancaman | Dampak |
 |-------|---------|--------|
-| *Contoh: Statistical* | *Contoh: Hanya 5 run per skenario* | *Power test rendah* |
-| | | |
-| | | |
+| Statistical | Kelas netral hanya 4,6% dari data, testing set ±55 sampel | F1 kelas netral tidak reliable, mendekati 0 pada kedua algoritma |
+| Construct validity | Class imbalance tidak ditangani (tidak ada oversampling) | F1 macro-average tetap lebih baik dari akurasi, tapi belum sepenuhnya mengatasi bias kelas minoritas |
 
 ---
 
@@ -175,5 +174,4 @@ Latih kemampuan failure analysis: hipotesis TIDAK didukung. Apa yang bisa dipela
 
 > Apakah "failure" dalam riset benar-benar gagal, atau justru kontribusi? Bagaimana failure analysis mengubah cara Anda melihat hasil negatif?
 
-> ___________________________________________________
-> ___________________________________________________
+> Failure dalam riset ini muncul bukan di level hipotesis utama (yang justru berhasil didukung), tapi di level yang lebih halus: performa kelas netral. Sebelum memahami failure analysis, kemungkinan besar temuan F1 kelas netral = 0,00 akan diabaikan atau disembunyikan karena "mengganggu" narasi keberhasilan SVM. Setelah memahami bahwa partial failure + analisis mendalam adalah kontribusi yang lebih kaya daripada full success tanpa analisis, temuan ini justru dilaporkan secara eksplisit sebagai bagian dari limitasi dan arah penelitian lanjutan — mengubah nilai penelitian dari sekadar "SVM menang" menjadi "SVM menang, tapi dengan boundary condition yang jelas pada kelas minoritas ekstrem."

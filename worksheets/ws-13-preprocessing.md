@@ -66,33 +66,38 @@ Data leakage terjadi ketika informasi dari test set "bocor" ke preprocessing:
 ```
 PREPROCESSING LOG
 
-Dataset           : ____________________
-Jumlah data awal  : ____________________
+Dataset           : dataset_ulasan_banking.csv (BCA Mobile, Mandiri Online, BRImo — Google Play Store)
+Jumlah data awal  : 6.000 ulasan (2.000 per aplikasi)
 
 Cleaning:
-| Masalah | Jumlah Kasus | Penanganan | Justifikasi |
-|---------|-------------|------------|-------------|
-| Missing |             |            |             |
-| Duplikat|             |            |             |
-| Error   |             |            |             |
+| Masalah  | Jumlah Kasus | Penanganan | Justifikasi |
+|----------|-------------|------------|-------------|
+| Ulasan kosong setelah preprocessing | 242 dari 6.000 (4,03%) | Listwise deletion — dropna(subset=['ulasan_bersih']) + filter string kosong (Cell 12) | Ulasan yang hanya berisi emoji/angka/simbol menjadi string kosong setelah regex cleaning — tidak bisa diberi bobot TF-IDF |
+| Duplikat | Tidak ditangani | Tidak ada langkah drop_duplicates() di pipeline | Limitasi nyata implementasi — diakui secara eksplisit sebagai keterbatasan, bukan diklaim sudah tertangani |
+| Error format (angka/simbol/emoji) | Seluruh 6.000 baris | Regex re.sub(r'[^a-zA-Z\s]', '', teks) | Membersihkan noise karakter yang tidak bermakna sentimen |
 
 Transformation:
 | Transformasi | Variabel | Detail | Alasan |
-|-------------|----------|--------|--------|
-|             |          |        |        |
+|--------------|----------|--------|--------|
+| Case folding | ulasan | teks.lower() | Menyamakan "Bagus" dan "bagus" jadi satu token |
+| Hapus non-alfabet | ulasan | Regex hapus angka, simbol, emoji | Vocabulary tidak dipenuhi karakter non-bermakna |
+| Normalisasi spasi | ulasan | re.sub(r'\s+', ' ', teks).strip() | Merapikan hasil regex sebelumnya |
+| Stopword removal | ulasan | Sastrawi StopWordRemoverFactory | Hapus kata umum non-diskriminatif |
+| Stemming | ulasan | Sastrawi StemmerFactory | Menyatukan variasi morfologis |
+| Labeling | rating → sentimen | rating≥4=positif, =3=netral, <3=negatif | Proxy label (limitasi diakui di WS-05) |
 
 Normalization:
-  Metode    : ____________________
-  Alasan    : ____________________
-  Parameter : (dihitung dari: training set / seluruh data)
+  Metode    : TF-IDF (TfidfVectorizer, max_features=5.000) — L2-norm default sklearn
+  Alasan    : Data teks, bukan numerik berskala berbeda; min-max/z-score/robust scaling tidak relevan. TF-IDF sudah ternormalisasi (L2-norm=1) — normalisasi tambahan melanggar prinsip Minimal Distortion
+  Parameter : dihitung dari: [✅] training set saja — tfidf.fit_transform(X_train), lalu tfidf.transform(X_test)
 
 Leakage Check:
-  [ ] Parameter normalisasi dari training set saja
-  [ ] Tidak ada informasi test set dalam preprocessing
-  [ ] Cross-validation dilakukan setelah split
+  [✅] Parameter TF-IDF (vocabulary + idf) dari training set saja
+  [✅] Split (train_test_split, stratify=y, random_state=42) dilakukan sebelum TF-IDF di-fit
+  [✅] 10-run eksperimen (Cell 17) split ulang sebelum fit TF-IDF setiap run — tidak ada kebocoran antar run
 
-Jumlah data akhir : ____________________
-Script tersedia   : [ ] Ya → path: ____ | [ ] Belum
+Jumlah data akhir : 5.758 ulasan (6.000 − 242) → Training : 4.606 (80%) | Testing : 1.152 (20%)
+Script tersedia   : [✅] Ya → NB_vs_SVM_Sentiment_MobileBanking.ipynb (Cell 9–12)
 ```
 
 ---
@@ -102,15 +107,14 @@ Script tersedia   : [ ] Ya → path: ____ | [ ] Belum
 Periksa dataset Anda (atau dataset contoh) dan dokumentasikan masalah yang ditemukan.
 
 | Masalah | Jumlah Kasus | Penanganan | Justifikasi |
-|---------|-------------|------------|-------------|
-| *Contoh: Missing di kolom "label"* | *12 dari 500 (2.4%)* | *Listwise deletion* | *< 5%, distribusi random (MCAR)* |
-| | | | |
-| | | | |
-| | | | |
+|---------|--------------|------------|-------------|
+| Ulasan kosong setelah preprocessing | 242 dari 6.000 (4,03%) | Listwise deletion (dropna + filter string kosong) | Ulasan tanpa huruf sama sekali tidak bisa diproses TF-IDF |
+| Duplikat teks | Tidak diperiksa | — | Limitasi pipeline — belum ada langkah df.duplicated() |
+| Karakter noise | Seluruh 6.000 baris | Regex cleaning di fungsi preprocessing() | Bukan penghapusan baris, tapi pembersihan token |
 
-**Jumlah data sebelum cleaning:** ____
-**Jumlah data setelah cleaning:** ____
-**Persentase data yang hilang/berubah:** ____%
+**Jumlah data sebelum cleaning:** 6.000
+**Jumlah data setelah cleaning:** 5.758
+**Persentase data yang hilang/berubah:** 4,03% (242 dari 6.000)
 
 ---
 
@@ -119,18 +123,18 @@ Periksa dataset Anda (atau dataset contoh) dan dokumentasikan masalah yang ditem
 Tentukan apakah data Anda perlu normalisasi, dan jika ya, metode apa yang tepat.
 
 | Variabel | Range Asli | Distribusi | Outlier? | Metode Normalisasi | Alasan |
-|----------|-----------|-----------|----------|-------------------|--------|
-| *Contoh: response_time* | *0.1 – 45.2s* | *Right-skewed* | *Ya (45.2s)* | *Robust scaling* | *Ada outlier, perlu robust* || *Contoh: accuracy_score* | *0.72 – 0.95* | *Normal, narrow* | *Tidak* | *Tidak perlu* | *Sudah dalam [0,1], metode berbasis distance tidak digunakan* || | | | | | |
-| | | | | | |
+|----------|------------|------------|----------|--------------------|--------|
+| Teks ulasan mentah | Panjang bervariasi | Right-skewed (mayoritas pendek) | Ya (beberapa panjang) | Tidak diskalakan langsung — direpresentasikan via TF-IDF | Teks tidak punya skala numerik |
+| Vektor TF-IDF | 0–1 per fitur, max_features=5.000 | Sparse | Tidak relevan sebagai outlier numerik | L2-norm (built-in) | Sudah ternormalisasi otomatis saat fit |
+| Rating bintang (1–5) | 1–5 | Skewed ke 4–5 (69,7% positif) | Class imbalance, bukan outlier | Tidak perlu — basis label nominal | Bukan variabel yang di-scale |
 
-**Apakah normalisasi diperlukan?** [ ] Ya / [ ] Tidak
+**Apakah normalisasi diperlukan?** [✅] Ya (TF-IDF L2-norm) — normalisasi numerik tambahan Tidak diperlukan
 **Justifikasi:**
-> ___________________________________________________
+> TF-IDF sudah menghasilkan representasi ternormalisasi secara built-in. Menambahkan min-max/z-score di atasnya melanggar prinsip Minimal Distortion — berisiko mendistorsi bobot kata langka, terutama untuk kelas netral yang hanya 4,6% dari data.
 
 **Leakage check:**
-- [ ] Parameter dihitung dari training set saja
-- [ ] Normalisasi diterapkan setelah train-test split
-
+- [✅] Parameter (vocabulary_, idf_) dihitung dari X_train saja
+- [✅] TF-IDF diterapkan setelah train_test_split
 ---
 
 ## Latihan 3 — Preprocessing Report
@@ -140,16 +144,17 @@ Buat ringkasan preprocessing lengkap — dokumentasi yang cukup bagi orang lain 
 ```
 PREPROCESSING SUMMARY
 
-1. Dataset: ____________________
-2. Data awal: ____ records, ____ features
+1. Dataset: dataset_ulasan_banking.csv → dataset_bersih.csv
+2. Data awal: 6.000 records, 5 kolom
 3. Cleaning:
-   - Missing values: ____ kasus, metode: ____
-   - Duplikat: ____ kasus, tindakan: ____
-   - Error: ____ kasus, tindakan: ____
-4. Transformation: ____________________
-5. Normalisasi: ____ (metode), parameter dari ____
-6. Data akhir: ____ records, ____ features
-7. Leakage check: [ ] Lulus / [ ] Ada masalah
+   - Missing/kosong: 242 kasus, metode: dropna + filter string kosong
+   - Duplikat: TIDAK diperiksa — limitasi pipeline
+   - Error format: seluruh data melalui regex cleaning
+4. Transformation: lowercase → hapus non-alfabet → normalisasi spasi
+   → stopword removal (Sastrawi) → stemming (Sastrawi) → labeling sentimen
+5. Normalisasi: TF-IDF (max_features=5.000, L2-norm), parameter dari training set saja
+6. Data akhir: 5.758 records → training 4.606 (80%) / testing 1.152 (20%)
+7. Leakage check: [✅] Lulus
 ```
 
 ---
@@ -158,5 +163,4 @@ PREPROCESSING SUMMARY
 
 > Apakah Anda pernah melakukan normalisasi "karena biasa dilakukan" tanpa mempertimbangkan apakah benar-benar diperlukan? Apa risiko over-preprocessing?
 
-> ___________________________________________________
-> ___________________________________________________
+> Preprocessing dalam penelitian ini secara sadar tidak menambahkan normalisasi numerik di atas TF-IDF — karena TF-IDF sendiri sudah ternormalisasi via L2-norm, penambahan scaling ekstra hanya akan mendistorsi bobot IDF tanpa manfaat tambahan (prinsip Minimal Distortion). Namun di sisi lain, ditemukan under-preprocessing yang tidak disadari: tidak ada langkah pengecekan duplikat sama sekali di pipeline. Ini bukan keputusan sadar melainkan langkah yang terlewat karena template preprocessing umum fokus ke noise karakter dan missing value, sementara duplikat dianggap otomatis tertangani — padahal tidak. Risiko over-preprocessing dan under-preprocessing sama-sama nyata: keduanya muncul dari mengikuti kebiasaan tanpa verifikasi eksplisit terhadap setiap elemen cleaning triad (missing, duplikat, error format).

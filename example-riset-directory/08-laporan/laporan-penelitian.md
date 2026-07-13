@@ -3,7 +3,7 @@
 **Judul:** Perbandingan Naive Bayes dan Support Vector Machine Berbasis TF-IDF untuk Klasifikasi Sentimen Ulasan Mobile Banking Indonesia di Google Play Store
 
 **Peneliti:** Radika Rismawati Tri Prasaja — 240202905
-**Target Publikasi:** TIIJ (Technology and Informatics Insight Journal), Universitas Putra Bangsa Kebumen — Sinta 5 (https://jurnal.universitasputrabangsa.ac.id/index.php/tiij)
+**Target Publikasi:** TIIJ (Technology and Informatics Insight Journal), Universitas Putra Bangsa — Sinta 5 (https://jurnal.universitasputrabangsa.ac.id/index.php/tiij)
 **Status Penelitian:** Tahap 1–7 selesai ([../07-manuskrip/](../07-manuskrip/))
 
 ---

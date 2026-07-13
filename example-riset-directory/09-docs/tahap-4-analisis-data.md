@@ -1,126 +1,94 @@
 # Tahap 4 — Ekstraksi Data & Visualisasi
 
-**Status:** Selesai — pipeline analisis sudah dijalankan atas matrix 400 run (40 replikasi), tabel & figure tersedia di `06-output/`
-**Bergantung pada:** [tahap-3-pengujian-k6.md](tahap-3-pengujian-k6.md)
-**Lokasi kode:** [../05-kode/analysis](../05-kode/analysis)
+**Status:** Selesai (2026-05-12, ~15:53–16:00 WIB)
+**Bergantung pada:** [tahap-3-pengumpulan-data-preprocessing.md](tahap-3-pengumpulan-data-preprocessing.md)
+**Lokasi kode:** [../05-kode/NB_vs_SVM_Sentiment_MobileBanking.ipynb](../05-kode/NB_vs_SVM_Sentiment_MobileBanking.ipynb) Cell 11–17
+**Lokasi output:** [../06-output/](../06-output/)
 
 ---
 
 ## Tujuan
 
-Mengolah data mentah hasil pengujian k6 (`04-data/`) — ringkasan k6, snapshot `/metrics` gateway, dan `resources.csv` — menjadi statistik deskriptif, perhitungan $D_{perf}$, metrik efektivitas mitigasi, dan visualisasi untuk Tahap 5.
+Menjalankan eksperimen perbandingan NB vs SVM pada kondisi identik, menganalisis hasil secara statistik, dan menghasilkan tabel serta visualisasi untuk naskah jurnal.
 
 ## Deliverable
 
-- [x] Skrip pengolahan `k6-summary.json` + `meta.json` → DataFrame tidy (`load_runs.py`)
-- [x] Statistik deskriptif (mean/std latensi avg/p90/p95/max, RPS, failed/checks rate) per (cache_mode, traffic_variant)
-- [x] Pengumpulan metrik resource (CPU%, memori) container gateway/postgres/redis dari `resources.csv`
-- [x] Perhitungan $D_{perf}$ = (T_hybrid − T_none) / T_none × 100% untuk traffic legitimate (baseline & dalam mixed)
-- [x] Metrik efektivitas mitigasi dari delta `/metrics` gateway (db queries, cache hit ratio, rate-limit blocked, auth outcome)
-- [x] Visualisasi grafik perbandingan (none vs hybrid) per traffic variant
-- [x] Ringkasan tabel hasil untuk Tahap 5 (`06-output/tables/`)
-- [x] Orkestrator `run_all.py` menjalankan seluruh pipeline sekali jalan
+- [x] TF-IDF vectorizer + split 80:20 stratified — split **sebelum** fit TF-IDF (Cell 11)
+- [x] Training + evaluasi MultinomialNB — F1=0,5466, Akurasi=0,8385 (Cell 12)
+- [x] Training + evaluasi SVC linear — F1=0,5553, Akurasi=0,8455 (Cell 13)
+- [x] Tabel perbandingan + simpan `hasil_perbandingan.csv` (Cell 14)
+- [x] Visualisasi bar chart + simpan `grafik_perbandingan.png` dpi=300 (Cell 15)
+- [x] 10 run eksperimen NB vs SVM (random_state=0–9) (Cell 16)
+- [x] Wilcoxon signed-rank test + Cohen's d + simpan `hasil_statistik.csv` + download semua output (Cell 17)
+- [x] Output tabel: [../06-output/tables/](../06-output/tables/)
+- [x] Output figure: [../06-output/figures/](../06-output/figures/)
 
 ## Desain yang Diimplementasikan
 
-### Struktur kode (`05-kode/analysis/`)
+### Modul Analisis
 
-```
-05-kode/analysis/
-├── requirements.txt        # pandas, numpy, scipy, matplotlib
-├── common.py                # helper baca 04-data/<run-id>/ (k6 summary, meta, /metrics, resources.csv)
-├── load_runs.py              # build_run_summary / build_resource_summary / build_gateway_metrics
-├── descriptive_stats.py       # statistik deskriptif latensi/RPS + breakdown legit vs attack pada mixed
-├── compute_dperf.py           # D_perf legitimate (baseline & dalam mixed-unique/mixed-pool)
-├── resource_stats.py          # CPU%/memori mean & max per (cache_mode, traffic_variant, container)
-├── gateway_metrics.py         # metrik efektivitas mitigasi dari delta /metrics (jwksgw_*)
-├── charts.py                  # 5 figure PNG -> 06-output/figures/
-└── run_all.py                 # jalankan semua modul di atas berurutan
-```
+| Cell | Fungsi | Output |
+|------|--------|--------|
+| Cell 11 | TF-IDF fit pada train + split 80:20 stratified | X_train, X_test, y_train, y_test |
+| Cell 12 | Training + evaluasi MultinomialNB (run tunggal) | F1=0,5466, Akurasi=0,8385 |
+| Cell 13 | Training + evaluasi SVC linear (run tunggal) | F1=0,5553, Akurasi=0,8455 |
+| Cell 14 | Tabel perbandingan run tunggal | `hasil_perbandingan.csv` |
+| Cell 15 | Bar chart perbandingan | `grafik_perbandingan.png` |
+| Cell 16 | 10 run loop (random_state=0–9) | List F1 NB dan SVM per run |
+| Cell 17 | Wilcoxon + Cohen's d + download | `hasil_statistik.csv` + semua file output |
 
-Setiap run dengan `meta.json.k6_exit_code != 0` dilewati (tidak ada pada matrix 400 run saat ini — semua exit 0).
+### Definisi Metrik
 
-### Modul
+**F1-Score macro-average** dipilih sebagai metrik primer karena distribusi kelas tidak seimbang — positif 69,7% vs netral 4,6%. Akurasi menyesatkan pada kondisi imbalance ini.
 
-| Modul | Fungsi utama | Output |
-|---|---|---|
-| `load_runs.py` | `build_run_summary()`, `build_resource_summary()`, `build_gateway_metrics()` | DataFrame tidy (dipakai modul lain, tidak menulis file) |
-| `descriptive_stats.py` | `build_descriptive_stats()`, `build_mixed_scenario_stats()` | `descriptive_stats.csv`, `descriptive_stats_mixed_scenarios.csv` |
-| `compute_dperf.py` | `build_dperf()` | `dperf.csv` |
-| `resource_stats.py` | `build_resource_usage()` | `resource_usage.csv` |
-| `gateway_metrics.py` | `build_derived_metrics()`, `build_mitigation_effectiveness()`, `build_db_query_reduction()` | `mitigation_effectiveness.csv`, `db_query_reduction.csv` |
-| `charts.py` | `fig_latency_p95`, `fig_dperf`, `fig_db_queries_reduction`, `fig_postgres_cpu`, `fig_resource_timeseries` | 5x PNG di `06-output/figures/` |
+**Wilcoxon signed-rank test** dipilih karena non-parametrik dan cocok untuk n=10 run berpasangan (distribusi F1 tidak dapat diasumsikan normal).
 
-Cara jalankan (dari `05-kode/analysis/`, environment Python dengan `requirements.txt` terinstal):
-
-```
-python run_all.py
-```
-
-Atau jalankan modul satu per satu (`python descriptive_stats.py`, dst.) untuk debug.
-
-### Definisi $D_{perf}$
-
-```
-D_perf = (T_hybrid - T_none) / T_none * 100%
-```
-
-Negatif = `hybrid` lebih cepat (membaik) dibanding `none`; positif = overhead. Dihitung untuk:
-
-1. **`legitimate` (tanpa attack)** — overhead cache hybrid pada kondisi normal, pakai `http_req_duration` avg/p95 keseluruhan.
-2. **`mixed-unique` / `mixed-pool`** — dampak mitigasi terhadap pengalaman user legit saat diserang, pakai Trend custom `legitimate_req_duration` (avg/p95) dari `mixed.js`.
-
-### Metrik efektivitas mitigasi
-
-Dari delta `gateway-metrics-{before,after}.txt` (Prometheus `jwksgw_*`):
-
-- `db_queries_total` = `jwksgw_db_queries_total{query_type="resolve_key"}` + `{query_type="rate_limit_upsert"}` — beban Postgres per run.
-- `cache_hit_ratio` = hit / (hit+miss) dari `jwksgw_cache_requests_total`.
-- `rate_limit_blocked_total` = `jwksgw_rate_limit_blocked_total`.
-- `auth_<outcome>` = `jwksgw_auth_requests_total{outcome=...}` untuk `ok|invalid_kid|rate_limited|unavailable|invalid_token`.
-
-`build_db_query_reduction()` menghitung penurunan `db_queries_total` (none → hybrid) per traffic_variant — metrik utama "efektivitas mitigasi" (lebih besar = lebih baik, karena beban Postgres turun drastis saat diserang).
+**Cohen's d** mengukur besaran perbedaan praktis di luar signifikansi statistik: d > 0,8 = large effect.
 
 ## Hasil
 
-### D_perf (`dperf.csv`, lihat juga `fig_dperf.png`)
+### Hasil Run Tunggal (random_state=42)
 
-| traffic_variant | label | metric | T_none (ms) | T_hybrid (ms) | D_perf |
-|---|---|---|---|---|---|
-| legitimate | tanpa attack | avg | 0.6905 | 0.6301 | **-8.8%** |
-| legitimate | tanpa attack | p95 | 1.0384 | 1.0063 | **-3.1%** |
-| mixed-unique | legit traffic dalam mixed-unique | avg | 10.4183 | 0.7721 | **-92.6%** |
-| mixed-unique | legit traffic dalam mixed-unique | p95 | 19.4384 | 1.3839 | **-92.9%** |
-| mixed-pool | legit traffic dalam mixed-pool | avg | 10.7468 | 5.7595 | **-46.4%** |
-| mixed-pool | legit traffic dalam mixed-pool | p95 | 20.5135 | 12.4138 | **-39.5%** |
+| Algoritma | F1-Score | Akurasi |
+|-----------|----------|---------|
+| Naive Bayes | 0,5466 | 0,8385 |
+| SVM | 0,5553 | 0,8455 |
+| Selisih | +0,0087 | +0,0070 |
 
-Hybrid caching **tidak menambah overhead** pada kondisi normal (legitimate tanpa attack justru sedikit lebih cepat, kemungkinan karena Postgres pada `none` masih menanggung query JWKS untuk setiap request). Saat traffic legitimate berjalan bersamaan dengan attack (`mixed-*`), hybrid **melindungi pengalaman user legit secara signifikan** — latensi p95 turun 93% (mixed-unique) dan 39% (mixed-pool) dibanding baseline.
+### Hasil 10 Run Eksperimen
 
-### Penurunan beban query Postgres (`db_query_reduction.csv`, `fig_db_queries_reduction.png`)
+| Run | F1 Naive Bayes | F1 SVM |
+|-----|----------------|--------|
+| 1 | 0,5542 | 0,5601 |
+| 2 | 0,5578 | 0,5691 |
+| 3 | 0,5460 | 0,5541 |
+| 4 | 0,5599 | 0,5595 |
+| 5 | 0,5496 | 0,5617 |
+| 6 | 0,5558 | 0,5648 |
+| 7 | 0,5544 | 0,5666 |
+| 8 | 0,5589 | 0,5671 |
+| 9 | 0,5456 | 0,5643 |
+| 10 | 0,5495 | 0,5594 |
+| **Rata-rata** | **0,5532** | **0,5627** |
+| **Std. Deviasi** | **0,0052** | **0,0045** |
 
-| traffic_variant | db_queries none (mean) | db_queries hybrid (mean) | reduction |
-|---|---|---|---|
-| legitimate | 300.114,7 | 10,0 | **99.997%** |
-| attack-unique | 907.845,5 | 61.894,1 | **93.182%** |
-| attack-pool | 879.271,7 | 73,1 | **99.992%** |
-| mixed-unique | 880.678,3 | 57.957,1 | **93.419%** |
-| mixed-pool | 849.226,3 | 74,6 | **99.991%** |
+SVM menghasilkan F1-Score lebih tinggi pada 9 dari 10 run (pengecualian: Run 4, selisih 0,0004).
 
-Hybrid caching (positive + negative cache di Redis) memangkas query ke Postgres **93-99.997%** di semua traffic variant. Pada `*-pool` (kid attacker berulang dari pool kecil), negative cache sangat efektif (~99.99% reduction) karena `kid` yang sama langsung ditolak dari Redis tanpa hit Postgres. Pada `*-unique` (kid attacker selalu baru), reduction lebih rendah (~93%) karena setiap `kid` baru tetap memicu satu kali `rate_limit_upsert` ke Postgres sebelum diblokir.
+### Analisis Statistik
 
-### Beban CPU Postgres (`resource_usage.csv`, `fig_postgres_cpu.png`, `fig_resource_timeseries.png`)
-
-| traffic_variant | CPU postgres none (mean%) | CPU postgres hybrid (mean%) |
-|---|---|---|
-| legitimate | 64.1 | 2.2 |
-| attack-unique | 158.3 | 124.4 |
-| attack-pool | 153.9 | 2.2 |
-| mixed-unique | 152.5 | 103.0 |
-| mixed-pool | 149.9 | 2.2 |
-
-Untuk `legitimate`, `attack-pool`, dan `mixed-pool`, hybrid menurunkan CPU Postgres dari 64-154% menjadi <2.5% — sejalan dengan penurunan query di atas. Untuk `*-unique`, CPU Postgres pada hybrid tetap tinggi (103-124%) karena setiap `kid` baru memicu `upsert_rate_limit_counter` (UPSERT per client_ip+window_start); dengan 200 VU dari satu IP, ini menjadi **lock-contention bottleneck** pada baris counter yang sama — terlihat juga pada `fig_latency_p95.png` di mana `attack-unique` hybrid p95 jauh lebih tinggi dari `none`. Ini adalah trade-off penting: hybrid memperlambat *traffic attacker itu sendiri* pada skenario `*-unique`, namun (lihat D_perf di atas) tetap melindungi traffic legitimate yang berjalan bersamaan pada `mixed-unique`.
+| Parameter | Nilai | Interpretasi |
+|-----------|-------|-------------|
+| p-value (Wilcoxon) | 0,0039 | p < α = 0,05 → H₀ ditolak |
+| Cohen's d | 1,9428 | Large effect (d > 0,8) |
 
 ### Catatan untuk Tahap 5
 
-- Trade-off `*-unique` vs `*-pool` di atas adalah temuan penting: pola CVE realistis (kid attacker dari pool kecil, `*-pool`) menunjukkan hybrid sangat efektif di semua dimensi (latensi, query Postgres, CPU). Pola `*-unique` (kid selalu baru) adalah edge case yang mengekspos bottleneck pada implementasi rate-limit per-IP berbasis UPSERT row tunggal — relevan untuk bagian "Keterbatasan"/"Future Work" paper.
-- Semua angka di atas adalah mean dari 40 replikasi; lihat `descriptive_stats.csv` dan `mitigation_effectiveness.csv` untuk std dev (error bar pada figure).
+- F1-Score moderat mencerminkan tantangan class imbalance (positif 69,7% vs netral 4,6%) — bukan kelemahan algoritma → relevan untuk bagian "Pembahasan" dan "Limitasi" naskah
+- Akurasi tinggi vs F1-Score moderat memvalidasi pemilihan F1-Score macro-average sebagai metrik primer
+- Semua angka di atas adalah klaim kunci yang harus konsisten di seluruh naskah — lihat [../07-manuskrip/00-outline.md](../07-manuskrip/00-outline.md)
+
+## Catatan Lingkungan
+
+- Waktu total eksperimen + analisis statistik: ~7 menit (15:53–16:00 WIB)
+- Sklearn Pipeline memastikan TF-IDF hanya di-fit pada training set — tidak ada data leakage
+- Import NLTK tidak digunakan di notebook — sebaiknya dihapus untuk clarity

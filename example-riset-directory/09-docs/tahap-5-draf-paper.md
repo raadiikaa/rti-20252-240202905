@@ -1,36 +1,51 @@
 # Tahap 5 — Penulisan Draf Paper Jurnal
 
-**Status:** Konten naskah selesai — naskah konsolidasi tersedia di [../07-manuskrip/naskah-jurnal.md](../07-manuskrip/naskah-jurnal.md) & [../07-manuskrip/naskah-jurnal.docx](../07-manuskrip/naskah-jurnal.docx), tinjauan pustaka lengkap dengan 18 referensi terverifikasi (BibTeX di [../02-literatur/daftar-pustaka.bib](../02-literatur/daftar-pustaka.bib)). Sisa pekerjaan: keputusan bahasa final & pemindahan ke template jurnal tujuan (lihat "Yang Masih Perlu Dilengkapi").
+**Status:** Selesai — naskah konsolidasi tersedia di [../07-manuskrip/naskah-jurnal.md](../07-manuskrip/naskah-jurnal.md) & [../07-manuskrip/naskah-jurnal.docx](../07-manuskrip/naskah-jurnal.docx). Referensi lengkap 11 entri format APA (BibTeX di [../02-literatur/daftar-pustaka.bib](../02-literatur/daftar-pustaka.bib)).
 **Bergantung pada:** [tahap-4-analisis-data.md](tahap-4-analisis-data.md) — *Selesai*
 
 ---
 
 ## Tujuan
 
-Menyusun draf naskah ilmiah dengan gaya bahasa akademis formal, objektif, dan pasif, sesuai target publikasi Sinta 2 / Scopus Q3-Q4.
+Menyusun draf naskah ilmiah dengan gaya bahasa akademis formal, sesuai target publikasi TIIJ UPB — Calibri 10pt, 2 kolom, APA style, abstrak maks 150 kata, Bahasa Indonesia.
 
 ## Rencana Deliverable (Struktur Naskah)
 
 | Bagian | File | Status |
-|---|---|---|
-| Naskah konsolidasi (template jurnal) | [../07-manuskrip/naskah-jurnal.md](../07-manuskrip/naskah-jurnal.md), [../07-manuskrip/naskah-jurnal.docx](../07-manuskrip/naskah-jurnal.docx) | Selesai — gabungan §1–§5 + Daftar Pustaka |
-| Abstrak | [../07-manuskrip/01-abstrak.md](../07-manuskrip/01-abstrak.md) | Draf selesai (ID & EN) |
-| Pendahuluan (latar belakang, rumusan masalah, tujuan, kontribusi) | [../07-manuskrip/02-pendahuluan.md](../07-manuskrip/02-pendahuluan.md) | Draf selesai |
-| Tinjauan Pustaka (JWT/JWKS, mitigasi, *related work*) | [../07-manuskrip/03-tinjauan-pustaka.md](../07-manuskrip/03-tinjauan-pustaka.md) | Selesai — §2.1–2.3 (RFC + CVE-2026-48524 terverifikasi) dan §2.4 *Related Work* (10 sitasi) |
-| Metodologi (arsitektur, skema, desain eksperimen, metrik) | [../07-manuskrip/04-metodologi.md](../07-manuskrip/04-metodologi.md) | Draf selesai |
-| Hasil & Analisis (statistik deskriptif, $D_{perf}$, reduksi query/CPU) | [../07-manuskrip/05-hasil-analisis.md](../07-manuskrip/05-hasil-analisis.md) | Draf selesai, mengacu ke [../06-output/](../06-output/) |
-| Kesimpulan & Saran Penelitian Lanjutan | [../07-manuskrip/06-kesimpulan.md](../07-manuskrip/06-kesimpulan.md) | Draf selesai |
-| Daftar Pustaka | [../07-manuskrip/07-daftar-pustaka.md](../07-manuskrip/07-daftar-pustaka.md) | Selesai — 18 referensi format IEEE (7 RFC, 1 advisory CVE-2026-48524, 10 related work); BibTeX: [../02-literatur/daftar-pustaka.bib](../02-literatur/daftar-pustaka.bib) |
+|--------|------|--------|
+| Outline & peta sumber & klaim kunci | [../07-manuskrip/00-outline.md](../07-manuskrip/00-outline.md) | Selesai |
+| Abstrak (ID & EN, maks 150 kata) | [../07-manuskrip/01-abstrak.md](../07-manuskrip/01-abstrak.md) | Selesai |
+| Pendahuluan | [../07-manuskrip/02-pendahuluan.md](../07-manuskrip/02-pendahuluan.md) | Selesai |
+| Tinjauan Pustaka | [../07-manuskrip/03-tinjauan-pustaka.md](../07-manuskrip/03-tinjauan-pustaka.md) | Selesai — 8 paper dari SLR |
+| Metode | [../07-manuskrip/04-metodologi.md](../07-manuskrip/04-metodologi.md) | Selesai — termasuk koreksi Data Splitter sebelum TF-IDF |
+| Hasil dan Pembahasan | [../07-manuskrip/05-hasil-analisis.md](../07-manuskrip/05-hasil-analisis.md) | Selesai — mengacu ke [../06-output/](../06-output/) |
+| Simpulan | [../07-manuskrip/06-kesimpulan.md](../07-manuskrip/06-kesimpulan.md) | Selesai |
+| Referensi (11 entri, APA style) | [../07-manuskrip/07-daftar-pustaka.md](../07-manuskrip/07-daftar-pustaka.md) | Selesai |
+| Naskah konsolidasi (.md) | [../07-manuskrip/naskah-jurnal.md](../07-manuskrip/naskah-jurnal.md) | Selesai — gabungan Abstrak s.d. Referensi |
+| Naskah konsolidasi (.docx) | [../07-manuskrip/naskah-jurnal.docx](../07-manuskrip/naskah-jurnal.docx) | Selesai — template TIIJ UPB |
 
-Outline & peta sumber: [../07-manuskrip/00-outline.md](../07-manuskrip/00-outline.md).
+Outline & peta sumber: [../07-manuskrip/00-outline.md](../07-manuskrip/00-outline.md)
+
+## Ketentuan Jurnal Target (TIIJ UPB)
+
+| Item | Ketentuan |
+|------|-----------|
+| Font | Calibri 10pt |
+| Layout | 2 kolom |
+| Abstrak | Maks 150 kata (ID + EN) |
+| Kata kunci | Maks 5 |
+| Sitasi | APA style |
+| Tabel | Judul di atas, tanpa garis vertikal |
+| Struktur | Abstrak → Pendahuluan → Tinjauan Pustaka → Metode → Hasil dan Pembahasan → Simpulan → Referensi |
+| Link submit | https://jurnal.universitasputrabangsa.ac.id/index.php/tiij |
 
 ## Yang Masih Perlu Dilengkapi Sebelum Submit
 
-1. **Keputusan bahasa final naskah** (Indonesia untuk Sinta 2 / Inggris untuk Scopus) — saat ini judul & abstrak dwibahasa, isi §1–§5 Bahasa Indonesia.
-2. **Pemindahan ke template jurnal tujuan** — dilakukan oleh peneliti (di luar scope AI assistant), menggunakan [../07-manuskrip/naskah-jurnal.md](../07-manuskrip/naskah-jurnal.md)/`.docx` sebagai sumber.
-3. **Penempatan figure/tabel final** sesuai gaya jurnal (caption, penomoran, resolusi) — sumber: [../06-output/figures/](../06-output/figures/) dan [../06-output/tables/](../06-output/tables/).
-4. **Lengkapi metadata penulis & afiliasi** (placeholder pada `naskah-jurnal.md`).
+1. **Gambar pipeline** — placeholder `[Gambar 1...]` di naskah, replace dengan `pipeline-klasifikasi.png` yang sudah direvisi (Data Splitter ditambahkan, cleansing ditambahkan, 10 run + Wilcoxon di Evaluator)
+2. **Gambar grafik perbandingan** — tersedia di [../06-output/figures/grafik_perbandingan.png](../06-output/figures/grafik_perbandingan.png), sisipkan ke dokumen Word menggantikan placeholder `[Gambar 2...]`
+3. **Review akhir konsistensi angka** — verifikasi semua klaim numerik konsisten antar dokumen (lihat daftar klaim kunci di [../07-manuskrip/00-outline.md](../07-manuskrip/00-outline.md))
+4. **Submit** ke https://jurnal.universitasputrabangsa.ac.id/index.php/tiij
 
 ## Catatan
 
-Bagian Hasil & Analisis mengacu langsung pada output Tahap 4 ([../06-output/](../06-output/)). Ringkasan naratif tambahan (versi lebih panjang, gaya laporan institusional) tersedia di [../08-laporan/laporan-penelitian.md](../08-laporan/laporan-penelitian.md). Bibliografi (18 referensi terverifikasi) dapat diimpor ke Mendeley dari [../02-literatur/daftar-pustaka.bib](../02-literatur/daftar-pustaka.bib).
+Naskah ditulis dalam Bahasa Indonesia dengan abstrak dwibahasa (ID + EN). Bibliografi 11 referensi dapat diimpor ke Mendeley dari [../02-literatur/daftar-pustaka.bib](../02-literatur/daftar-pustaka.bib). Ringkasan naratif lebih panjang (gaya laporan institusional) tersedia di [../08-laporan/laporan-penelitian.md](../08-laporan/laporan-penelitian.md). Penempatan figure/tabel final sesuai gaya jurnal — sumber figure: [../06-output/figures/](../06-output/figures/), sumber tabel: [../06-output/tables/](../06-output/tables/).

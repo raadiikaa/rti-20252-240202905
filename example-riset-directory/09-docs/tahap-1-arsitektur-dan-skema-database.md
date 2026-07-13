@@ -6,94 +6,109 @@
 
 ## 1. Komponen Sistem
 
-1. **API Gateway (Go, Echo)** — menerima request, mem-parsing header JWT untuk mengambil `kid`, lalu meresolusi JWK terkait sebelum verifikasi signature.
-2. **Redis (L1 Cache, murni cache JWKS)**
-   - *Positive cache*: `jwks:kid:<kid>` → JWK (TTL pendek, mis. 5 menit) untuk kunci valid.
-   - *Negative cache*: `jwks:negative:<kid>` → marker (TTL pendek, mis. 60 detik) untuk `kid` yang tidak ditemukan — inti mitigasi flooding.
-   - Tidak menyimpan state rate-limit (lihat poin 3).
-3. **PostgreSQL (L2 / Source of Truth + Rate Limit Counter Permanen)** — menyimpan metadata kunci signing (`signing_keys`) dan counter rate-limit permanen (`rate_limit_counters`).
+1. **Pipeline Klasifikasi Sentimen (Python, Google Colab)** — menerima dataset ulasan, menjalankan preprocessing, membentuk representasi TF-IDF, melatih dan mengevaluasi algoritma klasifikasi NB dan SVM secara terkontrol.
+2. **Modul Preprocessor (PySastrawi)** — menjalankan pipeline preprocessing teks Bahasa Indonesia: lowercase → cleansing (hapus simbol/angka/emoji) → stopword removal → stemming. Dikunci konstan sebagai variabel kontrol.
+3. **Modul Data Splitter (scikit-learn)** — membagi dataset 80:20 stratified per run dengan random_state dikunci. Split dilakukan **sebelum** TF-IDF untuk mencegah data leakage.
+4. **Modul Vectorizer TF-IDF (scikit-learn)** — mengubah teks menjadi representasi vektor numerik dengan max_features=5.000. Di-**fit hanya pada training set**, lalu di-transform ke test set secara terpisah via sklearn Pipeline. Dikunci konstan sebagai variabel kontrol.
+5. **Modul Classifier (scikit-learn)** — satu-satunya komponen yang berbeda antar kondisi eksperimen (variabel independen): kondisi A = MultinomialNB (alpha=1,0), kondisi B = SVC (kernel=linear, C=1,0).
+6. **Modul Evaluator (scikit-learn metrics)** — menghasilkan F1-Score macro-average, Akurasi, Precision macro, Recall macro secara otomatis setiap run dan menyimpan ke CSV (variabel dependen).
 
-## 2. Alur Resolusi Kunci (Mitigasi)
+## 2. Alur Resolusi Pipeline (Eksperimen)
+        [ Dataset: 6.000 Ulasan Google Play Store (3 Aplikasi) ]
+                                  │
+                                  ▼
+                [ Preprocessor (Control Variable) ]
+       ┌───────────────────────────────────────────────────┐
+       │ 1. Case Folding (Lowercase)                       │
+       │ 2. Cleansing (Hapus simbol, angka, & emoji)       │
+       │ 3. Stopword Removal                               │
+       │ 4. Stemming (PySastrawi)                          │
+       └───────────────────────────────────────────────────┘
+                                  │
+                                  ▼
+             [ Data Splitter: 80:20 Stratified Split ]
+             ┌───────────────────────────────────────┐
+             │  • Train Set : 4.606 Ulasan (80%)     │
+             │  • Test Set  : 1.152 Ulasan (20%)     │
+             └───────────────────────────────────────┘
+                                  │
+                                  ▼
+        [ Eksperimen Berulang: 10 Run (random_state 0-9) ]
+                                  │
+            ┌─────────────────────┴─────────────────────┐
+            ▼                                           ▼
+   [ Jalur Eksperimen A ]                      [ Jalur Eksperimen B ]
+ ┌───────────────────────────┐               ┌───────────────────────────┐
+ │ sklearn.pipeline          │               │ sklearn.pipeline          │
+ ├───────────────────────────┤               ├───────────────────────────┤
+ │ 1. TF-IDF Vectorizer      │               │ 1. TF-IDF Vectorizer      │
+ │    (max_features=5.000)   │               │    (max_features=5.000)   │
+ │    • .fit_transform(Train)│               │    • .fit_transform(Train)│
+ │    • .transform(Test)     │               │    • .transform(Test)     │
+ ├───────────────────────────┤               ├───────────────────────────┤
+ │ 2. Klasifikator: MNB      │               │ 2. Klasifikator: SVC      │
+ │    (MultinomialNB)        │               │    (Support Vector)       │
+ │    • alpha = 1.0          │               │    • kernel = 'linear'    │
+ │                           │               │    • C = 1.0              │
+ └───────────────────────────┘               └───────────────────────────┘
+            │                                           │
+            └─────────────────────┬─────────────────────┘
+                                  │
+                                  ▼
+                [ Evaluator (Dependent Variable) ]
+       ┌───────────────────────────────────────────────────┐
+       │  Metrik Evaluasi per Run:                         │
+       │  • F1-Score   • Akurasi   • Precision   • Recall  │
+       └───────────────────────────────────────────────────┘
+                                  │
+                                  ▼
+                   [ Pengujian Hipotesis Akhir ]
+       ┌───────────────────────────────────────────────────┐
+       │  • Wilcoxon Signed-Rank Test (Signifikansi p-val) │
+       │  • Cohen's d (Ukuran Efek / Effect Size)          │
+       └───────────────────────────────────────────────────┘
+                                  │
+                                  ▼
+                        [ Output & Artefak ]
+       ┌───────────────────────────────────────────────────┐
+       │  • results.csv (Data mentah 10 run)               │
+       │  • grafik_perbandingan.png                        │
+       └───────────────────────────────────────────────────┘
+Catatan: pada mode baseline (NB), satu-satunya yang berbeda dari mode treatment (SVM) adalah komponen Classifier — semua komponen lain identik, memastikan variable isolation yang ketat.
 
-```
-Request masuk → Gateway parsing header JWT → ambil `kid`
-  │
-  ├─ Cek Redis positive cache (jwks:kid:<kid>)
-  │     ├─ HIT  → verifikasi signature → lanjut
-  │     └─ MISS ↓
-  │
-  ├─ Cek Redis negative cache (jwks:negative:<kid>)
-  │     ├─ HIT  → tolak langsung (401), tanpa query DB
-  │     └─ MISS ↓
-  │
-  ├─ UPSERT & cek rate_limit_counters di PostgreSQL (atomic, per client_ip + window)
-  │     ├─ EXCEEDED → tolak (429) + set Redis negative cache
-  │     └─ OK ↓
-  │
-  └─ Query PostgreSQL (signing_keys WHERE kid = ? AND is_active)
-        ├─ FOUND     → isi Redis positive cache → verifikasi signature
-        └─ NOT FOUND → set Redis negative cache → tolak (401)
-```
+## 3. Skema Dataset
+dataset_ulasan_banking.csv (6.000 baris):
 
-Catatan: pada mode `CACHE_MODE=none` (baseline), langkah cek Redis dan rate-limit dilewati — setiap request langsung query `signing_keys` di PostgreSQL, mensimulasikan gateway tanpa mitigasi.
+    nama_user    : string   — nama pengguna Google Play Store
+    ulasan       : string   — teks ulasan berbahasa Indonesia
+    rating       : integer  — rating bintang (1–5)
+    tanggal      : datetime — tanggal ulasan ditulis
+    aplikasi     : string   — BCA Mobile / Mandiri Online / BRImo
+    sentimen     : string   — positif / netral / negatif (label dari rating bintang)
 
-Mekanisme **fail-closed**: jika Redis tidak dapat diakses, gateway tetap melanjutkan ke PostgreSQL (rate-limit counter tetap berfungsi karena bersumber dari PostgreSQL); jika PostgreSQL tidak dapat diakses, request ditolak (bukan diloloskan tanpa verifikasi).
+dataset_bersih.csv (5.758 baris setelah preprocessing):
 
-## 3. Skema Database (PostgreSQL)
+    [semua kolom di atas]
+    ulasan_bersih : string  — teks setelah preprocessing PySastrawi
 
-```sql
-CREATE TABLE signing_keys (
-    kid             VARCHAR(255) PRIMARY KEY,
-    kty             VARCHAR(10)  NOT NULL DEFAULT 'RSA',
-    alg             VARCHAR(10)  NOT NULL DEFAULT 'RS256',
-    use_type        VARCHAR(10)  NOT NULL DEFAULT 'sig',
-    n               TEXT         NOT NULL,   -- modulus, base64url
-    e               TEXT         NOT NULL,   -- exponent, base64url
-    is_active       BOOLEAN      NOT NULL DEFAULT TRUE,
-    created_at      TIMESTAMPTZ  NOT NULL DEFAULT now(),
-    expires_at      TIMESTAMPTZ,
-    revoked_at      TIMESTAMPTZ
-);
+## 4. Skema Output Eksperimen
 
-CREATE INDEX idx_signing_keys_active ON signing_keys (kid) WHERE is_active = TRUE;
-
--- Counter rate-limit permanen (source of truth di PostgreSQL)
-CREATE TABLE rate_limit_counters (
-    client_ip       INET        NOT NULL,
-    window_start    TIMESTAMPTZ NOT NULL,
-    request_count   INTEGER     NOT NULL DEFAULT 0,
-    blocked_count   INTEGER     NOT NULL DEFAULT 0,
-    PRIMARY KEY (client_ip, window_start)
-);
-```
-
-Upsert atomik untuk increment counter per request (window tetap, mis. 1 detik):
-
-```sql
-INSERT INTO rate_limit_counters (client_ip, window_start, request_count)
-VALUES ($1, $2, 1)
-ON CONFLICT (client_ip, window_start)
-DO UPDATE SET request_count = rate_limit_counters.request_count + 1
-RETURNING request_count;
-```
-
-Jika `request_count` melebihi ambang batas, request ditolak dan `blocked_count` di-increment pada baris yang sama. Data ini bersifat permanen (tidak di-TTL) sehingga dapat dipakai langsung untuk analisis pola serangan pada Tahap 4.
-
-Tabel log lookup tambahan (untuk cache hit/miss ratio) akan ditentukan pada Tahap 2 setelah skenario k6 lebih jelas.
-
-## 4. Skema Redis (Murni L1 Cache JWKS)
-
-| Key Pattern | Tipe | TTL | Tujuan |
-|---|---|---|---|
-| `jwks:kid:<kid>` | STRING (JSON JWK) | ~300s | Cache positif untuk kunci valid |
-| `jwks:negative:<kid>` | STRING (`"1"`) | ~60s | Cache negatif untuk `kid` tak dikenal |
+| File | Lokasi | Isi |
+|------|--------|-----|
+| `hasil_perbandingan.csv` | `06-output/tables/` | F1-Score dan Akurasi NB vs SVM run tunggal (random_state=42) |
+| `hasil_statistik.csv` | `06-output/tables/` | F1-Score NB dan SVM dari 10 run (random_state=0–9) + rata-rata + std. deviasi |
+| `grafik_perbandingan.png` | `06-output/figures/` | Bar chart perbandingan F1-Score dan Akurasi (dpi=300) |
+| `pipeline-klasifikasi.svg` | `01-proposal/`, `03-teori/` | Diagram arsitektur pipeline klasifikasi sentimen |
 
 ## 5. Keputusan Teknis (Final)
 
-1. **Mode eksperimen**: satu binary gateway dengan toggle `CACHE_MODE=none|hybrid` — `none` = baseline tanpa cache/rate-limit, `hybrid` = arsitektur mitigasi penuh. Memastikan perbandingan baseline vs mitigated apple-to-apple untuk perhitungan $D_{perf}$.
-2. **Framework Gateway**: **Echo** (Go web framework).
-3. **Rate limiting**: counter permanen di **PostgreSQL** (`rate_limit_counters`, atomic UPSERT per `client_ip` + window). **Redis murni sebagai L1 cache JWKS** (positive & negative cache), tidak menyimpan state rate-limit.
-4. **Identity Service**: **PostgreSQL `signing_keys` langsung sebagai backing store** — tidak ada microservice tambahan; fokus eksperimen pada lapisan caching/rate-limit di Gateway.
-5. **Redis client**: `go-redis/redis/v9` (default standar Go ekosistem).
-6. **PostgreSQL driver**: `pgx` (native driver, performa baik, mendukung connection pooling via `pgxpool`).
-7. **Skenario issuer**: single issuer (disederhanakan) — dapat diperluas ke multi-issuer di penelitian lanjutan jika diperlukan.
+1. **Platform eksperimen:** Google Colab (Python 3.12) — gratis, cloud-based, reproducible tanpa setup lokal
+2. **Mode eksperimen:** dua kondisi dalam satu notebook — kondisi A (NB) dan kondisi B (SVM) dijalankan pada konfigurasi identik, hanya Classifier yang berbeda
+3. **Algoritma Baseline:** MultinomialNB (alpha=1,0) — paling umum di domain analisis sentimen mobile banking Indonesia (muncul di 4 dari 8 paper SLR)
+4. **Algoritma Treatment:** SVC (kernel=linear, C=1,0) — kernel linear optimal untuk data teks TF-IDF berdimensi tinggi
+5. **Preprocessing:** PySastrawi — library NLP khusus Bahasa Indonesia dengan stemmer dan stopword yang komprehensif
+6. **Data Splitting:** dilakukan **sebelum** TF-IDF untuk mencegah data leakage — TF-IDF di-fit hanya pada training set via sklearn Pipeline
+7. **Metrik primer:** F1-Score macro-average — robust terhadap class imbalance (positif 69,7% vs netral 4,6%)
+8. **Replikasi:** 10 run dengan random_state=0–9 — memastikan stabilitas hasil
+9. **Uji statistik:** Wilcoxon signed-rank test (non-parametrik) pada α = 0,05
+10. **Effect size:** Cohen's d — mengukur besaran perbedaan praktis

@@ -2,7 +2,7 @@
 
 **Judul:** Perbandingan Naive Bayes dan Support Vector Machine Berbasis TF-IDF untuk Klasifikasi Sentimen Ulasan Mobile Banking Indonesia di Google Play Store
 
-**Target publikasi:** TIIJ (Technology and Informatics Insight Journal), Universitas Putra Bangsa Kebumen — Sinta 5
+**Target publikasi:** TIIJ (Technology and Informatics Insight Journal), Universitas Putra Bangsa — Sinta 5
 
 ## Ringkasan
 

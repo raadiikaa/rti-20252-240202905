@@ -1,6 +1,6 @@
 # Tahap 4 — Ekstraksi Data & Visualisasi
 
-**Status:** Selesai (2026-05-12, ~15:53–16:00 WIB)
+**Status:** Selesai 
 **Bergantung pada:** [tahap-3-pengumpulan-data-preprocessing.md](tahap-3-pengumpulan-data-preprocessing.md)
 **Lokasi kode:** [../05-kode/NB_vs_SVM_Sentiment_MobileBanking.ipynb](../05-kode/NB_vs_SVM_Sentiment_MobileBanking.ipynb) Cell 11–17
 **Lokasi output:** [../06-output/](../06-output/)

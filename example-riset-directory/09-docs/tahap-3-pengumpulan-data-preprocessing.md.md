@@ -1,6 +1,6 @@
 # Tahap 3 — Pengumpulan Data & Preprocessing
 
-**Status:** Selesai (2026-05-12, ~15:30–15:45 WIB)
+**Status:** Selesai 
 **Bergantung pada:** [tahap-2-implementasi-pipeline-klasifikasi-(phyton).md](tahap-2-implementasi-pipeline-klasifikasi-(python).md)
 **Lokasi kode:** [../05-kode/NB_vs_SVM_Sentiment_MobileBanking.ipynb](../05-kode/NB_vs_SVM_Sentiment_MobileBanking.ipynb) Cell 1–10
 

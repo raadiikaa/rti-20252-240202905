@@ -14,66 +14,73 @@
 6. **Modul Evaluator (scikit-learn metrics)** — menghasilkan F1-Score macro-average, Akurasi, Precision macro, Recall macro secara otomatis setiap run dan menyimpan ke CSV (variabel dependen).
 
 ## 2. Alur Resolusi Pipeline (Eksperimen)
-        [ Dataset: 6.000 Ulasan Google Play Store (3 Aplikasi) ]
-                                  │
-                                  ▼
-                [ Preprocessor (Control Variable) ]
-       ┌───────────────────────────────────────────────────┐
-       │ 1. Case Folding (Lowercase)                       │
-       │ 2. Cleansing (Hapus simbol, angka, & emoji)       │
-       │ 3. Stopword Removal                               │
-       │ 4. Stemming (PySastrawi)                          │
-       └───────────────────────────────────────────────────┘
-                                  │
-                                  ▼
-             [ Data Splitter: 80:20 Stratified Split ]
-             ┌───────────────────────────────────────┐
-             │  • Train Set : 4.606 Ulasan (80%)     │
-             │  • Test Set  : 1.152 Ulasan (20%)     │
-             └───────────────────────────────────────┘
-                                  │
-                                  ▼
-        [ Eksperimen Berulang: 10 Run (random_state 0-9) ]
-                                  │
-            ┌─────────────────────┴─────────────────────┐
-            ▼                                           ▼
-   [ Jalur Eksperimen A ]                      [ Jalur Eksperimen B ]
- ┌───────────────────────────┐               ┌───────────────────────────┐
- │ sklearn.pipeline          │               │ sklearn.pipeline          │
- ├───────────────────────────┤               ├───────────────────────────┤
- │ 1. TF-IDF Vectorizer      │               │ 1. TF-IDF Vectorizer      │
- │    (max_features=5.000)   │               │    (max_features=5.000)   │
- │    • .fit_transform(Train)│               │    • .fit_transform(Train)│
- │    • .transform(Test)     │               │    • .transform(Test)     │
- ├───────────────────────────┤               ├───────────────────────────┤
- │ 2. Klasifikator: MNB      │               │ 2. Klasifikator: SVC      │
- │    (MultinomialNB)        │               │    (Support Vector)       │
- │    • alpha = 1.0          │               │    • kernel = 'linear'    │
- │                           │               │    • C = 1.0              │
- └───────────────────────────┘               └───────────────────────────┘
-            │                                           │
-            └─────────────────────┬─────────────────────┘
-                                  │
-                                  ▼
-                [ Evaluator (Dependent Variable) ]
-       ┌───────────────────────────────────────────────────┐
-       │  Metrik Evaluasi per Run:                         │
-       │  • F1-Score   • Akurasi   • Precision   • Recall  │
-       └───────────────────────────────────────────────────┘
-                                  │
-                                  ▼
-                   [ Pengujian Hipotesis Akhir ]
-       ┌───────────────────────────────────────────────────┐
-       │  • Wilcoxon Signed-Rank Test (Signifikansi p-val) │
-       │  • Cohen's d (Ukuran Efek / Effect Size)          │
-       └───────────────────────────────────────────────────┘
-                                  │
-                                  ▼
-                        [ Output & Artefak ]
-       ┌───────────────────────────────────────────────────┐
-       │  • results.csv (Data mentah 10 run)               │
-       │  • grafik_perbandingan.png                        │
-       └───────────────────────────────────────────────────┘
+ ```
+[ Dataset: 6.000 Ulasan Google Play Store (3 Aplikasi) ]
+                          |
+                          v
+          [ Preprocessor (Control Variable) ]
++-------------------------------------------------------+
+| 1. Case Folding (Lowercase)                           |
+| 2. Cleansing (Hapus simbol, angka, & emoji)           |
+| 3. Stopword Removal                                   |
+| 4. Stemming (PySastrawi)                              |
++-------------------------------------------------------+
+                          |
+                          v
+         [ Data Splitter: 80:20 Stratified Split ]
++-----------------------------------------------+
+| Train Set : 4.608 Ulasan (80%)                |
+| Test Set  : 1.152 Ulasan (20%)                |
++-----------------------------------------------+
+                          |
+                          v
+     [ Eksperimen Berulang: 10 Run (random_state 0-9) ]
+                          |
+              +-----------+-----------+
+              |                       |
+              v                       v
+
+      [ Jalur Eksperimen A ]    [ Jalur Eksperimen B ]
+
++----------------------------+  +----------------------------+
+| sklearn.pipeline           |  | sklearn.pipeline           |
++----------------------------+  +----------------------------+
+| 1. TF-IDF Vectorizer       |  | 1. TF-IDF Vectorizer       |
+|    (max_features=5000)     |  |    (max_features=5000)     |
+|    fit_transform(Train)    |  |    fit_transform(Train)    |
+|    transform(Test)         |  |    transform(Test)         |
++----------------------------+  +----------------------------+
+| 2. MultinomialNB           |  | 2. SVC                     |
+|    alpha = 1.0             |  |    kernel = linear         |
+|                            |  |    C = 1.0                |
++----------------------------+  +----------------------------+
+              |                       |
+              +-----------+-----------+
+                          |
+                          v
+          [ Evaluator (Dependent Variable) ]
++-------------------------------------------------------+
+| Metrik Evaluasi per Run:                              |
+| - F1-Score                                            |
+| - Accuracy                                            |
+| - Precision                                           |
+| - Recall                                              |
++-------------------------------------------------------+
+                          |
+                          v
+             [ Pengujian Hipotesis Akhir ]
++-------------------------------------------------------+
+| - Wilcoxon Signed-Rank Test (p-value)                 |
+| - Cohen's d (Effect Size)                             |
++-------------------------------------------------------+
+                          |
+                          v
+                  [ Output & Artefak ]
++-------------------------------------------------------+
+| - results.csv (Data mentah 10 run)                    |
+| - grafik_perbandingan.png                             |
++-------------------------------------------------------+
+```
 Catatan: pada mode baseline (NB), satu-satunya yang berbeda dari mode treatment (SVM) adalah komponen Classifier — semua komponen lain identik, memastikan variable isolation yang ketat.
 
 ## 3. Skema Dataset
